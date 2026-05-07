@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="CreditIQ"/>
+<meta name="theme-color" content="#05080f"/>
+<title>CreditIQ</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#05080f;--surface:#0b1120;--card:#111827;--border:#1f2d45;--border2:#263548;
+  --text:#f0f4ff;--muted:#6b7fa3;--dim:#3d506b;
+  --cyan:#00d4ff;--cyan2:#0099cc;--green:#00e5a0;--green2:#00b37a;
+  --amber:#f59e0b;--red:#ff4d6d;--purple:#a78bfa;--blue:#3b82f6;
+  --eq-color:#ff4d6d;--tu-color:#a78bfa;
+}
+html,body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ─── LAYOUT ─── */
+.app{display:flex;flex-direction:column;min-height:100vh;max-width:480px;margin:0 auto}
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(5,8,15,0.92);backdrop-filter:blur(20px);
+  padding:env(safe-area-inset-top,12px) 16px 0;
+  border-bottom:1px solid var(--border);
+}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px}
+.app-logo{display:flex;align-items:center;gap:8px}
+.logo-mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--cyan),var(--purple));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;font-family:'JetBrains Mono',monospace}
+.app-name{font-size:18px;font-weight:800;letter-spacing:-0.02em}
+.app-name span{color:var(--cyan)}
+.nav-tabs{display:flex;gap:0}
+.tab{padding:8px 16px;font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;border:none;background:none;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;font-family:'Syne',sans-serif}
+.tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+
+/* ─── PAGES ─── */
+.page{display:none;padding:16px 16px env(safe-area-inset-bottom,24px);animation:fadeIn .25s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── SCORE PANEL ─── */
+.score-hero{background:linear-gradient(135deg,#0b1a2e,#111827);border-radius:20px;padding:20px;margin-bottom:14px;border:1px solid var(--border);position:relative;overflow:hidden}
+.score-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(0,212,255,0.08),transparent 70%);pointer-events:none}
+.score-hero-label{font-size:10px;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase;margin-bottom:16px}
+.score-row{display:flex;justify-content:space-around;margin-bottom:16px}
+.score-block{text-align:center}
+.score-bureau{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
+.score-num{font-family:'JetBrains Mono',monospace;font-size:40px;font-weight:700;line-height:1}
+.score-delta{font-size:12px;font-weight:700;margin-top:4px}
+.score-tier{font-size:10px;margin-top:2px;font-weight:600}
+.score-divider{width:1px;background:var(--border);align-self:stretch}
+
+.score-bar-section{margin-top:4px}
+.score-bar-label{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:5px}
+.score-track{height:8px;background:var(--border);border-radius:4px;overflow:hidden;position:relative}
+.score-fill{height:100%;border-radius:4px;transition:width 0.8s cubic-bezier(.4,0,.2,1)}
+.score-markers{display:flex;justify-content:space-between;font-size:9px;color:var(--dim);margin-top:3px}
+
+/* ─── STATS STRIP ─── */
+.stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat-tile{background:var(--card);border-radius:14px;padding:14px 10px;text-align:center;border:1px solid var(--border)}
+.stat-tile-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
+.stat-tile-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700}
+.stat-tile-sub{font-size:9px;color:var(--muted);margin-top:3px}
+
+/* ─── MILESTONES ─── */
+.section-title{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;margin-top:4px}
+.milestones{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.milestone{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);transition:border-color .3s}
+.milestone.done{border-color:var(--green2)}
+.ms-circle{width:32px;height:32px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:all .3s}
+.ms-info{flex:1}
+.ms-score{font-size:13px;font-weight:700}
+.ms-desc{font-size:11px;color:var(--muted);margin-top:1px}
+.ms-month{font-size:10px;margin-top:2px;font-weight:600}
+
+/* ─── CARDS PAGE ─── */
+.cc-list{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.cc-card{background:var(--card);border-radius:18px;padding:18px;border:1px solid var(--border);position:relative;overflow:hidden;transition:border-color .3s}
+.cc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.cc-card.color-0::before{background:linear-gradient(90deg,var(--cyan),var(--blue))}
+.cc-card.color-1::before{background:linear-gradient(90deg,var(--purple),var(--red))}
+.cc-card.color-2::before{background:linear-gradient(90deg,var(--green),var(--cyan))}
+.cc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.cc-name-row{display:flex;align-items:center;gap:8px}
+.cc-icon{width:34px;height:22px;border-radius:5px;background:linear-gradient(135deg,var(--border),var(--border2));display:flex;align-items:center;justify-content:center;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--muted)}
+.cc-name{font-size:15px;font-weight:700}
+.cc-apr{font-size:11px;color:var(--muted);margin-top:2px}
+.cc-edit-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);padding:5px 10px;font-size:11px;cursor:pointer;font-family:'Syne',sans-serif}
+.cc-balance-row{display:flex;align-items:baseline;gap:6px;margin-bottom:10px}
+.cc-balance{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700}
+.cc-limit{font-size:13px;color:var(--muted)}
+.cc-util-row{display:flex;justify-content:space-between;font-size:10px;margin-bottom:6px}
+.util-label{color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
+.util-pct{font-weight:700;font-family:'JetBrains Mono',monospace}
+.cc-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.cc-bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.cc-actions{display:flex;gap:8px}
+.log-btn{flex:1;background:linear-gradient(135deg,var(--cyan2),var(--blue));border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;padding:11px;cursor:pointer;font-family:'Syne',sans-serif;transition:opacity .2s}
+.log-btn:active{opacity:.8}
+.hist-btn{background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:11px;padding:11px 14px;cursor:pointer;font-family:'Syne',sans-serif}
+.add-card-btn{width:100%;background:none;border:2px dashed var(--border);border-radius:18px;color:var(--muted);font-size:13px;font-weight:600;padding:18px;cursor:pointer;font-family:'Syne',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.add-card-btn:active{border-color:var(--cyan);color:var(--cyan)}
+
+/* ─── LOG PAGE ─── */
+.log-list{display:flex;flex-direction:column;gap:8px}
+.log-item{background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.log-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.log-info{flex:1}
+.log-card-name{font-size:13px;font-weight:700}
+.log-date{font-size:11px;color:var(--muted);margin-top:2px}
+.log-note{font-size:11px;color:var(--muted);font-style:italic;margin-top:2px}
+.log-amount{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--green)}
+.log-score-change{font-size:10px;color:var(--green);font-weight:700;margin-top:2px;text-align:right}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-icon{font-size:36px;margin-bottom:12px}
+.empty-text{font-size:14px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.empty-sub{font-size:12px}
+
+/* ─── MODALS ─── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:24px 24px 0 0;padding:24px 20px env(safe-area-inset-bottom,28px);width:100%;max-width:480px;transform:translateY(40px);transition:transform .3s cubic-bezier(.4,0,.2,1);border:1px solid var(--border);border-bottom:none;max-height:92vh;overflow-y:auto}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:20px}
+.form-group{margin-bottom:16px}
+.form-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:8px;font-weight:600}
+.form-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;padding:13px 16px;font-family:'Syne',sans-serif;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.form-input:focus{border-color:var(--cyan)}
+.form-input::placeholder{color:var(--dim)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.btn-primary{flex:1;background:linear-gradient(135deg,var(--cyan),var(--blue));border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;padding:14px;cursor:pointer;font-family:'Syne',sans-serif}
+.btn-secondary{background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--muted);font-size:14px;font-weight:600;padding:14px 18px;cursor:pointer;font-family:'Syne',sans-serif}
+.btn-danger{background:#3d0a14;border:1px solid var(--red);border-radius:12px;color:var(--red);font-size:13px;font-weight:600;padding:12px 16px;cursor:pointer;font-family:'Syne',sans-serif}
+
+/* ─── HISTORY MODAL ─── */
+.hist-list{display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto}
+.hist-item{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:10px;padding:12px;border:1px solid var(--border)}
+.hist-date{font-size:11px;color:var(--muted);min-width:70px}
+.hist-amount{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--green);flex:1;text-align:right}
+.hist-note{font-size:11px;color:var(--muted);flex:1}
+.hist-delete{background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer;padding:4px}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:env(safe-area-inset-bottom,24px);left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:600;z-index:300;transition:transform .3s cubic-bezier(.4,0,.2,1);white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:var(--green2);color:var(--green)}
+.toast.info{border-color:var(--cyan2);color:var(--cyan)}
+
+/* ─── SCORE SNAPSHOT CHART ─── */
+.snapshot-chart{background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;border:1px solid var(--border)}
+.snapshot-chart canvas{width:100%!important}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="app-logo">
+        <div class="logo-mark">IQ</div>
+        <div class="app-name">Credit<span>IQ</span></div>
+      </div>
+    </div>
+    <div class="nav-tabs">
+      <button class="tab active" onclick="switchTab('dashboard')">Dashboard</button>
+      <button class="tab" onclick="switchTab('cards')">My Cards</button>
+      <button class="tab" onclick="switchTab('history')">History</button>
+    </div>
+  </div>
+
+  <!-- ══ DASHBOARD PAGE ══ -->
+  <div class="page active" id="page-dashboard">
+
+    <!-- Score Hero -->
+    <div class="score-hero">
+      <div class="score-hero-label">Credit Score Tracker</div>
+      <div class="score-row">
+        <div class="score-block">
+          <div class="score-bureau">Equifax</div>
+          <div class="score-num" id="disp-eq" style="color:var(--eq-color)">584</div>
+          <div class="score-delta" id="disp-eq-delta" style="color:var(--muted)">—</div>
+          <div class="score-tier" id="disp-eq-tier" style="color:var(--eq-color)">Poor</div>
+        </div>
+        <div class="score-divider"></div>
+        <div class="score-block">
+          <div class="score-bureau">TransUnion</div>
+          <div class="score-num" id="disp-tu" style="color:var(--tu-color)">655</div>
+          <div class="score-delta" id="disp-tu-delta" style="color:var(--muted)">—</div>
+          <div class="score-tier" id="disp-tu-tier" style="color:var(--tu-color)">Fair</div>
+        </div>
+      </div>
+      <div class="score-bar-section">
+        <div class="score-bar-label"><span>300</span><span>Poor → Fair → Good → Very Good → Exceptional</span><span>850</span></div>
+        <div class="score-track"><div class="score-fill" id="eq-bar-fill" style="background:var(--eq-color)"></div></div>
+        <div style="height:6px"></div>
+        <div class="score-track"><div class="score-fill" id="tu-bar-fill" style="background:var(--tu-color)"></div></div>
+        <div class="score-markers"><span>EQ</span><span>TU</span></div>
+      </div>
+    </div>
+
+    <!-- Stats Strip -->
+    <div class="stats-strip">
+      <div class="stat-tile">
+        <div class="stat-tile-label">Total Debt</div>
+        <div class="stat-tile-val" id="stat-debt" style="color:var(--red)">$0</div>
+        <div class="stat-tile-sub" id="stat-debt-sub">of limits</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-tile-label">Utilization</div>
+        <div class="stat-tile-val" id="stat-util" style="color:var(--amber)">0%</div>
+        <div class="stat-tile-sub" id="stat-util-tag">—</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-tile-label">Paid Total</div>
+        <div class="stat-tile-val" id="stat-paid" style="color:var(--green)">$0</div>
+        <div class="stat-tile-sub" id="stat-paid-sub">all time</div>
+      </div>
+    </div>
+
+    <!-- Score Snapshot Chart -->
+    <div class="snapshot-chart">
+      <div class="section-title">Score History</div>
+      <canvas id="scoreChart" height="120"></canvas>
+    </div>
+
+    <!-- Milestones -->
+    <div class="section-title">TransUnion Milestones</div>
+    <div class="milestones" id="milestones-list"></div>
+
+  </div>
+
+  <!-- ══ CARDS PAGE ══ -->
+  <div class="page" id="page-cards">
+    <div class="cc-list" id="cc-list"></div>
+    <button class="add-card-btn" onclick="openAddCard()">＋ Add Credit Card</button>
+  </div>
+
+  <!-- ══ HISTORY PAGE ══ -->
+  <div class="page" id="page-history">
+    <div class="log-list" id="global-log"></div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ══ LOG PAYMENT MODAL ══ -->
+<div class="modal-overlay" id="modal-payment" onclick="closeOnOverlay(event,'modal-payment')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Log Payment</div>
+    <div class="form-group">
+      <label class="form-label">Card</label>
+      <div id="log-card-name" style="font-size:15px;font-weight:700;color:var(--cyan);padding:4px 0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Amount ($)</label>
+        <input class="form-input" type="number" id="log-amount" placeholder="0.00" inputmode="decimal"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input class="form-input" type="date" id="log-date"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Note (optional)</label>
+      <input class="form-input" type="text" id="log-note" placeholder="e.g. minimum payment"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('modal-payment')">Cancel</button>
+      <button class="btn-primary" onclick="submitPayment()">Log Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADD / EDIT CARD MODAL ══ -->
+<div class="modal-overlay" id="modal-card" onclick="closeOnOverlay(event,'modal-card')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="card-modal-title">Add Credit Card</div>
+    <div class="form-group">
+      <label class="form-label">Card Nickname</label>
+      <input class="form-input" type="text" id="edit-name" placeholder="e.g. TD Visa"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Balance ($)</label>
+        <input class="form-input" type="number" id="edit-balance" placeholder="0.00" inputmode="decimal"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Credit Limit ($)</label>
+        <input class="form-input" type="number" id="edit-limit" placeholder="0.00" inputmode="decimal"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Interest Rate (%)</label>
+        <input class="form-input" type="number" id="edit-apr" placeholder="e.g. 22.99" inputmode="decimal"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Min. Payment ($)</label>
+        <input class="form-input" type="number" id="edit-minpay" placeholder="0.00" inputmode="decimal"/>
+      </div>
+    </div>
+    <div class="modal-actions" style="flex-wrap:wrap;gap:8px">
+      <button class="btn-secondary" onclick="closeModal('modal-card')">Cancel</button>
+      <button class="btn-primary" onclick="saveCard()">Save Card</button>
+    </div>
+    <div style="margin-top:10px" id="delete-btn-wrap"></div>
+  </div>
+</div>
+
+<!-- ══ HISTORY MODAL ══ -->
+<div class="modal-overlay" id="modal-history" onclick="closeOnOverlay(event,'modal-history')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="hist-modal-title">Payment History</div>
+    <div class="hist-list" id="hist-list"></div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn-secondary" style="width:100%" onclick="closeModal('modal-history')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  STORAGE
+// ══════════════════════════════════════════
+const DB = {
+  get(k){try{return JSON.parse(localStorage.getItem('ciq_'+k))}catch{return null}},
+  set(k,v){localStorage.setItem('ciq_'+k,JSON.stringify(v))},
+  del(k){localStorage.removeItem('ciq_'+k)}
+};
+
+// ── Default state ──
+function defaultState(){
+  return {
+    cards:[
+      {id:'c1',name:'Card 1',balance:8000,limit:10000,apr:24.99,minPay:200,color:0},
+      {id:'c2',name:'Card 2',balance:7500,limit:9000,apr:19.99,minPay:150,color:1},
+    ],
+    payments:[],
+    snapshots:[{date:today(),eq:584,tu:655,note:'Starting scores'}],
+    baseEq:584,baseTu:655,
+    totalPaid:0,
+  };
+}
+function today(){return new Date().toISOString().slice(0,10)}
+
+let S = DB.get('state') || defaultState();
+function save(){DB.set('state',S)}
+
+// ══════════════════════════════════════════
+//  SCORE ENGINE
+// ══════════════════════════════════════════
+function calcScores(){
+  const cards = S.cards;
+  if(!cards.length) return {eq:S.baseEq,tu:S.baseTu};
+  const totalBal = cards.reduce((a,c)=>a+c.balance,0);
+  const totalLim = cards.reduce((a,c)=>a+c.limit,0);
+  const util = totalLim > 0 ? totalBal/totalLim : 0;
+
+  // Utilization gain (0–80 pts)
+  const uGain = util<=0.05?85:util<=0.10?80:util<=0.20?65:util<=0.30?50:util<=0.50?25:util<=0.70?8:0;
+
+  // Payment history gain — based on number of logged payments (up to 25 pts)
+  const pCount = S.payments.length;
+  const pGain = Math.min(pCount * 2.5, 25);
+
+  // Credit mix (12 pts flat if they have cards)
+  const mGain = 12;
+
+  // Total paid ratio bonus (up to 10 pts)
+  const totalOriginal = cards.reduce((a,c)=>a+c.balance,0)+S.totalPaid;
+  const paidRatio = totalOriginal>0 ? S.totalPaid/totalOriginal : 0;
+  const payBonus = Math.round(paidRatio*10);
+
+  const gain = uGain + pGain + mGain + payBonus;
+  return {
+    eq: Math.min(850, Math.round(S.baseEq + gain)),
+    tu: Math.min(850, Math.round(S.baseTu + gain)),
+    util: Math.round(util*100),
+    totalBal,
+    totalLim,
+  };
+}
+
+function scoreLabel(s){
+  if(s>=800)return{t:'Exceptional',c:'#00e5a0'};
+  if(s>=740)return{t:'Very Good',c:'#4ade80'};
+  if(s>=670)return{t:'Good',c:'#a3e635'};
+  if(s>=580)return{t:'Fair',c:'#facc15'};
+  return{t:'Poor',c:'#ff4d6d'};
+}
+
+// ══════════════════════════════════════════
+//  RENDER DASHBOARD
+// ══════════════════════════════════════════
+function renderDashboard(){
+  const sc = calcScores();
+  const eqInfo = scoreLabel(sc.eq);
+  const tuInfo = scoreLabel(sc.tu);
+  const firstSnap = S.snapshots[0]||{eq:S.baseEq,tu:S.baseTu};
+
+  // Scores
+  setEl('disp-eq',sc.eq);
+  setEl('disp-tu',sc.tu);
+  document.getElementById('disp-eq').style.color=eqInfo.c;
+  document.getElementById('disp-tu').style.color=tuInfo.c;
+
+  const eqDelta=sc.eq-firstSnap.eq, tuDelta=sc.tu-firstSnap.tu;
+  const eqDeltaEl=document.getElementById('disp-eq-delta');
+  const tuDeltaEl=document.getElementById('disp-tu-delta');
+  eqDeltaEl.textContent=eqDelta===0?'No change':(eqDelta>0?'+':'')+eqDelta+' pts';
+  eqDeltaEl.style.color=eqDelta>0?'#4ade80':eqDelta<0?'#ff4d6d':'var(--muted)';
+  tuDeltaEl.textContent=tuDelta===0?'No change':(tuDelta>0?'+':'')+tuDelta+' pts';
+  tuDeltaEl.style.color=tuDelta>0?'#4ade80':tuDelta<0?'#ff4d6d':'var(--muted)';
+
+  setEl('disp-eq-tier',eqInfo.t); document.getElementById('disp-eq-tier').style.color=eqInfo.c;
+  setEl('disp-tu-tier',tuInfo.t); document.getElementById('disp-tu-tier').style.color=tuInfo.c;
+
+  // Bars
+  document.getElementById('eq-bar-fill').style.width=pct(sc.eq,300,850)+'%';
+  document.getElementById('eq-bar-fill').style.background=eqInfo.c;
+  document.getElementById('tu-bar-fill').style.width=pct(sc.tu,300,850)+'%';
+  document.getElementById('tu-bar-fill').style.background=tuInfo.c;
+
+  // Stats
+  setEl('stat-debt','$'+fmt(sc.totalBal||0));
+  setEl('stat-util',(sc.util||0)+'%');
+  document.getElementById('stat-util').style.color=
+    (sc.util||0)<10?'#00e5a0':(sc.util||0)<30?'#4ade80':(sc.util||0)<50?'#facc15':'#ff4d6d';
+  setEl('stat-util-tag',(sc.util||0)<10?'🎯 Optimal':(sc.util||0)<30?'✅ Good':(sc.util||0)<50?'⚠️ High':'🔴 Critical');
+  setEl('stat-paid','$'+fmt(S.totalPaid));
+  setEl('stat-debt-sub','of $'+fmt(sc.totalLim||0));
+
+  // Milestones
+  const ms=[
+    {score:670,label:'Good — Most loans available',color:'#a3e635'},
+    {score:700,label:'TD Bank loan likely approved',color:'#4ade80'},
+    {score:740,label:'Very Good — Best rates unlock',color:'#2dd4bf'},
+    {score:780,label:'Excellent — Premium tier',color:'#38bdf8'},
+    {score:800,label:'Exceptional — Top 1%',color:'#00e5a0'},
+  ];
+  const ml=document.getElementById('milestones-list');
+  ml.innerHTML=ms.map(m=>{
+    const done=sc.tu>=m.score;
+    return`<div class="milestone${done?' done':''}">
+      <div class="ms-circle" style="border-color:${m.color};background:${done?m.color:'transparent'};color:${done?'#05080f':'var(--muted)'}">
+        ${done?'✓':''}
+      </div>
+      <div class="ms-info">
+        <div class="ms-score" style="color:${done?m.color:'var(--muted)'}">${m.score}+</div>
+        <div class="ms-desc">${m.label}</div>
+        ${done?`<div class="ms-month" style="color:${m.color}">✓ Achieved</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Chart
+  renderChart();
+}
+
+// ══════════════════════════════════════════
+//  MINI CHART
+// ══════════════════════════════════════════
+function renderChart(){
+  const canvas=document.getElementById('scoreChart');
+  const ctx=canvas.getContext('2d');
+  const snaps=S.snapshots;
+  const W=canvas.offsetWidth||340, H=120;
+  canvas.width=W*2; canvas.height=H*2; ctx.scale(2,2);
+
+  ctx.clearRect(0,0,W,H);
+  if(snaps.length<2){
+    ctx.fillStyle='#3d506b';ctx.font='13px Syne';ctx.textAlign='center';
+    ctx.fillText('Log payments to see score history',W/2,H/2);return;
+  }
+  const eqs=snaps.map(s=>s.eq), tus=snaps.map(s=>s.tu);
+  const allVals=[...eqs,...tus];
+  const minV=Math.min(...allVals)-20, maxV=Math.max(...allVals)+20;
+  const n=snaps.length;
+  function xPos(i){return 30+(i/(n-1))*(W-40)}
+  function yPos(v){return H-20-((v-minV)/(maxV-minV))*(H-30)}
+
+  // Grid lines
+  ctx.strokeStyle='#1f2d45';ctx.lineWidth=0.5;
+  for(let i=0;i<4;i++){
+    const y=20+i*((H-30)/3);
+    ctx.beginPath();ctx.moveTo(30,y);ctx.lineTo(W-10,y);ctx.stroke();
+  }
+
+  // EQ line
+  drawLine(ctx,snaps.map((_,i)=>({x:xPos(i),y:yPos(eqs[i])})),'#ff4d6d',W,H);
+  // TU line
+  drawLine(ctx,snaps.map((_,i)=>({x:xPos(i),y:yPos(tus[i])})),'#a78bfa',W,H);
+
+  // Dots & labels
+  snaps.forEach((s,i)=>{
+    [[eqs[i],'#ff4d6d'],[tus[i],'#a78bfa']].forEach(([v,c])=>{
+      ctx.beginPath();ctx.arc(xPos(i),yPos(v),3.5,0,Math.PI*2);
+      ctx.fillStyle=c;ctx.fill();
+    });
+    if(i===0||i===n-1){
+      ctx.fillStyle='#6b7fa3';ctx.font='9px JetBrains Mono';ctx.textAlign='center';
+      ctx.fillText(s.date.slice(5),xPos(i),H-4);
+    }
+  });
+
+  // Legend
+  ctx.font='9px Syne';ctx.textAlign='left';
+  ctx.fillStyle='#ff4d6d';ctx.fillRect(32,8,16,3);ctx.fillText('EQ',52,12);
+  ctx.fillStyle='#a78bfa';ctx.fillRect(80,8,16,3);ctx.fillText('TU',100,12);
+}
+
+function drawLine(ctx,pts,color,W,H){
+  if(pts.length<2)return;
+  // gradient fill
+  const grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,color+'44');grad.addColorStop(1,color+'00');
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+  pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));
+  ctx.lineTo(pts[pts.length-1].x,H-20);ctx.lineTo(pts[0].x,H-20);
+  ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+  // line
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+  pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));
+  ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
+}
+
+// ══════════════════════════════════════════
+//  RENDER CARDS
+// ══════════════════════════════════════════
+function renderCards(){
+  const list=document.getElementById('cc-list');
+  list.innerHTML=S.cards.map((c,i)=>{
+    const util=c.limit>0?Math.round((c.balance/c.limit)*100):0;
+    const barColor=util<10?'#00e5a0':util<30?'#4ade80':util<50?'#facc15':util<75?'#f97316':'#ff4d6d';
+    return`<div class="cc-card color-${c.color||i}">
+      <div class="cc-header">
+        <div>
+          <div class="cc-name-row">
+            <div class="cc-icon">${c.name.slice(0,2).toUpperCase()}</div>
+            <div class="cc-name">${c.name}</div>
+          </div>
+          <div class="cc-apr">${c.apr}% APR · Min $${fmt(c.minPay)}/mo</div>
+        </div>
+        <button class="cc-edit-btn" onclick="openEditCard('${c.id}')">Edit</button>
+      </div>
+      <div class="cc-balance-row">
+        <div class="cc-balance" style="color:${barColor}">$${fmt(c.balance)}</div>
+        <div class="cc-limit">/ $${fmt(c.limit)}</div>
+      </div>
+      <div class="cc-util-row">
+        <span class="util-label">Utilization</span>
+        <span class="util-pct" style="color:${barColor}">${util}%</span>
+      </div>
+      <div class="cc-bar"><div class="cc-bar-fill" style="width:${Math.min(util,100)}%;background:${barColor}"></div></div>
+      <div class="cc-actions">
+        <button class="log-btn" onclick="openLogPayment('${c.id}')">＋ Log Payment</button>
+        <button class="hist-btn" onclick="openHistory('${c.id}')">History</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+//  RENDER GLOBAL HISTORY
+// ══════════════════════════════════════════
+function renderHistory(){
+  const gl=document.getElementById('global-log');
+  const sorted=[...S.payments].sort((a,b)=>b.date.localeCompare(a.date));
+  if(!sorted.length){
+    gl.innerHTML=`<div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <div class="empty-text">No payments logged yet</div>
+      <div class="empty-sub">Go to My Cards and tap Log Payment</div>
+    </div>`;return;
+  }
+  gl.innerHTML=sorted.map(p=>{
+    const card=S.cards.find(c=>c.id===p.cardId)||{name:'Deleted Card',color:0};
+    const dotColors=['#00d4ff','#a78bfa','#00e5a0'];
+    return`<div class="log-item">
+      <div class="log-dot" style="background:${dotColors[card.color||0]}"></div>
+      <div class="log-info">
+        <div class="log-card-name">${card.name}</div>
+        <div class="log-date">${fmtDate(p.date)}</div>
+        ${p.note?`<div class="log-note">${p.note}</div>`:''}
+      </div>
+      <div style="text-align:right">
+        <div class="log-amount">$${fmt(p.amount)}</div>
+        ${p.scoreImpact?`<div class="log-score-change">+${p.scoreImpact} pts est.</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+//  LOG PAYMENT
+// ══════════════════════════════════════════
+let activeCardId=null;
+function openLogPayment(cardId){
+  activeCardId=cardId;
+  const card=S.cards.find(c=>c.id===cardId);
+  document.getElementById('log-card-name').textContent=card.name;
+  document.getElementById('log-amount').value='';
+  document.getElementById('log-date').value=today();
+  document.getElementById('log-note').value='';
+  openModal('modal-payment');
+}
+
+function submitPayment(){
+  const amount=parseFloat(document.getElementById('log-amount').value);
+  const date=document.getElementById('log-date').value;
+  const note=document.getElementById('log-note').value.trim();
+  if(!amount||amount<=0){showToast('Enter a valid amount','info');return;}
+  if(!date){showToast('Select a date','info');return;}
+
+  const card=S.cards.find(c=>c.id===activeCardId);
+  if(!card)return;
+
+  // Snapshot before
+  const before=calcScores();
+
+  // Apply payment
+  card.balance=Math.max(0,card.balance-amount);
+  S.totalPaid+=amount;
+
+  // Snapshot after
+  const after=calcScores();
+  const impact=after.tu-before.tu;
+
+  // Log payment
+  S.payments.push({id:'p'+Date.now(),cardId:activeCardId,amount,date,note,scoreImpact:impact>0?impact:0});
+
+  // Score snapshot
+  S.snapshots.push({date,eq:after.eq,tu:after.tu,note:`Payment $${fmt(amount)} on ${card.name}`});
+
+  save();
+  closeModal('modal-payment');
+  renderAll();
+  showToast(`Payment logged! TU score +${impact>0?impact:0} pts estimated`,'success');
+}
+
+// ══════════════════════════════════════════
+//  ADD / EDIT CARD
+// ══════════════════════════════════════════
+let editingCardId=null;
+function openAddCard(){
+  editingCardId=null;
+  document.getElementById('card-modal-title').textContent='Add Credit Card';
+  ['edit-name','edit-balance','edit-limit','edit-apr','edit-minpay'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('delete-btn-wrap').innerHTML='';
+  openModal('modal-card');
+}
+function openEditCard(id){
+  editingCardId=id;
+  const c=S.cards.find(x=>x.id===id);
+  document.getElementById('card-modal-title').textContent='Edit Card';
+  document.getElementById('edit-name').value=c.name;
+  document.getElementById('edit-balance').value=c.balance;
+  document.getElementById('edit-limit').value=c.limit;
+  document.getElementById('edit-apr').value=c.apr;
+  document.getElementById('edit-minpay').value=c.minPay||0;
+  document.getElementById('delete-btn-wrap').innerHTML=
+    `<button class="btn-danger" style="width:100%" onclick="deleteCard('${id}')">🗑 Delete Card</button>`;
+  openModal('modal-card');
+}
+function saveCard(){
+  const name=document.getElementById('edit-name').value.trim();
+  const balance=parseFloat(document.getElementById('edit-balance').value)||0;
+  const limit=parseFloat(document.getElementById('edit-limit').value)||0;
+  const apr=parseFloat(document.getElementById('edit-apr').value)||0;
+  const minPay=parseFloat(document.getElementById('edit-minpay').value)||0;
+  if(!name){showToast('Enter a card name','info');return;}
+  if(limit<=0){showToast('Enter a credit limit','info');return;}
+  if(editingCardId){
+    const c=S.cards.find(x=>x.id===editingCardId);
+    Object.assign(c,{name,balance,limit,apr,minPay});
+  } else {
+    if(S.cards.length>=3){showToast('Max 3 cards supported','info');return;}
+    S.cards.push({id:'c'+Date.now(),name,balance,limit,apr,minPay,color:S.cards.length});
+  }
+  // Add snapshot on edit
+  const sc=calcScores();
+  S.snapshots.push({date:today(),eq:sc.eq,tu:sc.tu,note:editingCardId?'Card updated':'Card added'});
+  save();closeModal('modal-card');renderAll();
+  showToast(editingCardId?'Card updated':'Card added','success');
+}
+function deleteCard(id){
+  if(!confirm('Delete this card?'))return;
+  S.cards=S.cards.filter(c=>c.id!==id);
+  save();closeModal('modal-card');renderAll();showToast('Card deleted','info');
+}
+
+// ══════════════════════════════════════════
+//  HISTORY MODAL
+// ══════════════════════════════════════════
+function openHistory(cardId){
+  const card=S.cards.find(c=>c.id===cardId);
+  document.getElementById('hist-modal-title').textContent=(card?card.name:'Card')+' — History';
+  const payments=S.payments.filter(p=>p.cardId===cardId).sort((a,b)=>b.date.localeCompare(a.date));
+  const hl=document.getElementById('hist-list');
+  if(!payments.length){
+    hl.innerHTML=`<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">No payments logged yet</div>`;
+  } else {
+    hl.innerHTML=payments.map(p=>`
+      <div class="hist-item">
+        <div class="hist-date">${fmtDate(p.date)}</div>
+        <div class="hist-note">${p.note||'—'}</div>
+        <div class="hist-amount">$${fmt(p.amount)}</div>
+        <button class="hist-delete" onclick="deletePayment('${p.id}','${cardId}')">✕</button>
+      </div>`).join('');
+  }
+  openModal('modal-history');
+}
+function deletePayment(pid,cardId){
+  const p=S.payments.find(x=>x.id===pid);
+  if(!p)return;
+  const card=S.cards.find(c=>c.id===cardId);
+  if(card)card.balance=Math.min(card.limit,card.balance+p.amount);
+  S.totalPaid=Math.max(0,S.totalPaid-p.amount);
+  S.payments=S.payments.filter(x=>x.id!==pid);
+  save();openHistory(cardId);renderAll();showToast('Payment removed','info');
+}
+
+// ══════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════
+function renderAll(){renderDashboard();renderCards();renderHistory();}
+function setEl(id,v){document.getElementById(id).textContent=v}
+function fmt(n){return Number(n||0).toLocaleString('en-CA',{minimumFractionDigits:0,maximumFractionDigits:0})}
+function fmtDate(d){if(!d)return '';const dt=new Date(d+'T12:00:00');return dt.toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'})}
+function pct(v,min,max){return Math.max(0,Math.min(100,((v-min)/(max-min))*100))}
+
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const names=['dashboard','cards','history'];
+    t.classList.toggle('active',names[i]===name);
+  });
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(name==='dashboard')setTimeout(renderChart,50);
+}
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function closeOnOverlay(e,id){if(e.target===document.getElementById(id))closeModal(id)}
+
+let toastTimer;
+function showToast(msg,type='info'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast '+type+' show';
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// Init
+renderAll();
+window.addEventListener('resize',()=>{if(document.getElementById('page-dashboard').classList.contains('active'))renderChart()});
+</script>
+</body>
+</html>
