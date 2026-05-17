@@ -19,246 +19,473 @@
   --eq-color:#ff4d6d;--tu-color:#a78bfa;
 }
 html,body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-
-/* ─── LAYOUT ─── */
+body{padding:0 0 env(safe-area-inset-bottom,16px)}
 .app{display:flex;flex-direction:column;min-height:100vh;max-width:480px;margin:0 auto}
-.topbar{
-  position:sticky;top:0;z-index:100;
-  background:rgba(5,8,15,0.92);backdrop-filter:blur(20px);
-  padding:env(safe-area-inset-top,12px) 16px 0;
-  border-bottom:1px solid var(--border);
-}
-.topbar-inner{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px}
+
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(5,8,15,0.96);backdrop-filter:blur(20px);padding:env(safe-area-inset-top,12px) 16px 0;border-bottom:1px solid var(--border)}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px}
 .app-logo{display:flex;align-items:center;gap:8px}
-.logo-mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--cyan),var(--purple));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;font-family:'JetBrains Mono',monospace}
-.app-name{font-size:18px;font-weight:800;letter-spacing:-0.02em}
+.logo-mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--cyan),var(--purple));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;font-family:'JetBrains Mono',monospace}
+.app-name{font-size:19px;font-weight:800;letter-spacing:-0.02em}
 .app-name span{color:var(--cyan)}
-.nav-tabs{display:flex;gap:0}
-.tab{padding:8px 16px;font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;border:none;background:none;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;font-family:'Syne',sans-serif}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.last-updated{font-size:10px;color:var(--dim)}
+.icon-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--muted);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;border:none}
+.nav-tabs{display:flex}
+.tab{flex:1;padding:9px 4px;font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;border:none;background:none;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;font-family:'Syne',sans-serif;text-align:center}
 .tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
 
-/* ─── PAGES ─── */
-.page{display:none;padding:16px 16px env(safe-area-inset-bottom,24px);animation:fadeIn .25s ease}
+/* ── PAGES ── */
+.page{display:none;padding:14px 14px 90px;animation:fadeIn .2s ease}
 .page.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 
-/* ─── SCORE PANEL ─── */
-.score-hero{background:linear-gradient(135deg,#0b1a2e,#111827);border-radius:20px;padding:20px;margin-bottom:14px;border:1px solid var(--border);position:relative;overflow:hidden}
-.score-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(0,212,255,0.08),transparent 70%);pointer-events:none}
-.score-hero-label{font-size:10px;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase;margin-bottom:16px}
-.score-row{display:flex;justify-content:space-around;margin-bottom:16px}
+/* ── PIN ── */
+.pin-screen{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px}
+.pin-screen.hidden{display:none}
+.pin-logo{font-size:44px;margin-bottom:14px}
+.pin-title{font-size:22px;font-weight:800;margin-bottom:6px}
+.pin-sub{font-size:13px;color:var(--muted);margin-bottom:8px;text-align:center}
+.pin-error{color:var(--red);font-size:12px;font-weight:600;min-height:18px;margin-bottom:16px}
+.pin-dots{display:flex;gap:16px;margin-bottom:28px}
+.pin-dot{width:15px;height:15px;border-radius:50%;border:2px solid var(--border);transition:all .2s}
+.pin-dot.filled{background:var(--cyan);border-color:var(--cyan)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;width:100%;max-width:270px}
+.pin-key{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:17px;font-size:22px;font-weight:700;cursor:pointer;text-align:center;font-family:'JetBrains Mono',monospace;transition:all .15s;color:var(--text)}
+.pin-key:active{background:var(--border2);transform:scale(0.94)}
+.pin-key.del{font-size:16px;color:var(--muted)}
+.pin-key.empty{visibility:hidden}
+.pin-skip{color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;margin-top:18px}
+
+/* ── SCORE HERO ── */
+.score-hero{background:linear-gradient(135deg,#091628,#111827);border-radius:20px;padding:18px;margin-bottom:12px;border:1px solid var(--border);position:relative;overflow:hidden}
+.score-hero::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;background:radial-gradient(circle,rgba(0,212,255,0.06),transparent 70%);pointer-events:none}
+.score-hero-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.score-hero-label{font-size:10px;letter-spacing:0.18em;color:var(--muted);text-transform:uppercase}
+.update-score-btn{background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.28);border-radius:9px;color:var(--cyan);font-size:11px;font-weight:700;padding:7px 13px;cursor:pointer;font-family:'Syne',sans-serif}
+.score-row{display:flex;justify-content:space-around;margin-bottom:14px}
 .score-block{text-align:center}
-.score-bureau{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
-.score-num{font-family:'JetBrains Mono',monospace;font-size:40px;font-weight:700;line-height:1}
+.score-bureau{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
+.score-num{font-family:'JetBrains Mono',monospace;font-size:44px;font-weight:700;line-height:1}
+.score-source-badge{display:inline-flex;align-items:center;font-size:9px;padding:2px 8px;border-radius:10px;margin-top:4px;font-weight:700}
+.score-source-badge.real{background:rgba(0,229,160,0.12);color:var(--green);border:1px solid rgba(0,229,160,0.25)}
+.score-source-badge.est{background:rgba(107,127,163,0.1);color:var(--muted);border:1px solid var(--border)}
 .score-delta{font-size:12px;font-weight:700;margin-top:4px}
-.score-tier{font-size:10px;margin-top:2px;font-weight:600}
+.score-tier{font-size:10px;margin-top:2px;font-weight:700}
 .score-divider{width:1px;background:var(--border);align-self:stretch}
+.score-bars{margin-top:6px}
+.score-bar-label{display:flex;justify-content:space-between;font-size:9px;color:var(--dim);margin-bottom:4px}
+.score-track{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:5px}
+.score-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.score-bureau-tags{display:flex;justify-content:space-between;font-size:9px;font-weight:700;margin-top:1px}
 
-.score-bar-section{margin-top:4px}
-.score-bar-label{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:5px}
-.score-track{height:8px;background:var(--border);border-radius:4px;overflow:hidden;position:relative}
-.score-fill{height:100%;border-radius:4px;transition:width 0.8s cubic-bezier(.4,0,.2,1)}
-.score-markers{display:flex;justify-content:space-between;font-size:9px;color:var(--dim);margin-top:3px}
-
-/* ─── STATS STRIP ─── */
-.stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-.stat-tile{background:var(--card);border-radius:14px;padding:14px 10px;text-align:center;border:1px solid var(--border)}
-.stat-tile-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
-.stat-tile-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700}
+/* ── STATS ── */
+.stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat-tile{background:var(--card);border-radius:14px;padding:12px 8px;text-align:center;border:1px solid var(--border)}
+.stat-tile-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px}
+.stat-tile-val{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;line-height:1}
 .stat-tile-sub{font-size:9px;color:var(--muted);margin-top:3px}
 
-/* ─── MILESTONES ─── */
-.section-title{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;margin-top:4px}
-.milestones{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-.milestone{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);transition:border-color .3s}
-.milestone.done{border-color:var(--green2)}
-.ms-circle{width:32px;height:32px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:all .3s}
-.ms-info{flex:1}
-.ms-score{font-size:13px;font-weight:700}
-.ms-desc{font-size:11px;color:var(--muted);margin-top:1px}
-.ms-month{font-size:10px;margin-top:2px;font-weight:600}
+/* ── DEBT OVERVIEW ── */
+.debt-overview{background:var(--card);border-radius:16px;padding:16px;margin-bottom:12px;border:1px solid var(--border)}
+.debt-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.debt-total{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:var(--red)}
+.debt-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.debt-card-bar-row{margin-bottom:10px}
+.debt-card-name{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
+.debt-bar-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.debt-bar-fill{height:100%;border-radius:3px}
+.due-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.due-item{text-align:center}
+.due-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px}
+.due-amount{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--amber)}
+.due-date{font-size:9px;color:var(--muted);margin-top:2px}
 
-/* ─── CARDS PAGE ─── */
-.cc-list{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
-.cc-card{background:var(--card);border-radius:18px;padding:18px;border:1px solid var(--border);position:relative;overflow:hidden;transition:border-color .3s}
+/* ── SECTION ── */
+.section-title{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;margin-top:2px}
+.card-box{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px;border:1px solid var(--border)}
+
+/* ── CHART ── */
+.chart-legend{display:flex;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+.legend-dot{width:18px;height:3px;border-radius:2px}
+
+/* ── SCORE LOG ── */
+.score-log-list{display:flex;flex-direction:column;gap:7px;max-height:240px;overflow-y:auto}
+.score-log-item{display:flex;align-items:center;gap:8px;padding:10px 11px;background:var(--surface);border-radius:10px;border:1px solid var(--border)}
+.score-log-scores{flex:1}
+.score-log-eq{font-size:12px;font-weight:700;color:var(--eq-color)}
+.score-log-tu{font-size:12px;font-weight:700;color:var(--tu-color)}
+.score-log-meta{font-size:10px;color:var(--muted);margin-top:2px}
+.score-log-badge{font-size:9px;padding:2px 7px;border-radius:8px;font-weight:700}
+.score-log-del{background:none;border:none;color:var(--dim);font-size:14px;cursor:pointer;padding:4px}
+
+/* ── MILESTONES ── */
+.milestones{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.milestone{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:12px;padding:11px 12px;border:1px solid var(--border);transition:border-color .3s}
+.milestone.done{border-color:var(--green2)}
+.ms-circle{width:28px;height:28px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:all .3s}
+.ms-info{flex:1}
+.ms-score{font-size:12px;font-weight:700}
+.ms-desc{font-size:10px;color:var(--muted);margin-top:1px}
+.ms-status{font-size:10px;margin-top:2px;font-weight:700}
+
+/* ── CC CARDS ── */
+.cc-list{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.cc-card{background:var(--card);border-radius:18px;padding:16px;border:1px solid var(--border);position:relative;overflow:hidden}
 .cc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.cc-card.color-0::before{background:linear-gradient(90deg,var(--cyan),var(--blue))}
+.cc-card.color-0::before{background:linear-gradient(90deg,#0ea5e9,#6366f1)}
 .cc-card.color-1::before{background:linear-gradient(90deg,var(--purple),var(--red))}
 .cc-card.color-2::before{background:linear-gradient(90deg,var(--green),var(--cyan))}
-.cc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
-.cc-name-row{display:flex;align-items:center;gap:8px}
-.cc-icon{width:34px;height:22px;border-radius:5px;background:linear-gradient(135deg,var(--border),var(--border2));display:flex;align-items:center;justify-content:center;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--muted)}
-.cc-name{font-size:15px;font-weight:700}
-.cc-apr{font-size:11px;color:var(--muted);margin-top:2px}
+.cc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.cc-name{font-size:15px;font-weight:800}
+.cc-meta{font-size:11px;color:var(--muted);margin-top:2px}
 .cc-edit-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);padding:5px 10px;font-size:11px;cursor:pointer;font-family:'Syne',sans-serif}
-.cc-balance-row{display:flex;align-items:baseline;gap:6px;margin-bottom:10px}
+.cc-balance-row{display:flex;align-items:baseline;gap:6px;margin-bottom:8px}
 .cc-balance{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700}
-.cc-limit{font-size:13px;color:var(--muted)}
-.cc-util-row{display:flex;justify-content:space-between;font-size:10px;margin-bottom:6px}
-.util-label{color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
-.util-pct{font-weight:700;font-family:'JetBrains Mono',monospace}
-.cc-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.cc-limit-txt{font-size:13px;color:var(--muted)}
+.cc-util-row{display:flex;justify-content:space-between;font-size:10px;margin-bottom:5px}
+.cc-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:8px}
 .cc-bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.cc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.cc-stat{background:var(--surface);border-radius:8px;padding:8px 6px;text-align:center}
+.cc-stat-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px}
+.cc-stat-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700}
+.warn-banner{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:9px;padding:9px 11px;font-size:11px;color:var(--amber);margin-bottom:10px;line-height:1.5}
 .cc-actions{display:flex;gap:8px}
-.log-btn{flex:1;background:linear-gradient(135deg,var(--cyan2),var(--blue));border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;padding:11px;cursor:pointer;font-family:'Syne',sans-serif;transition:opacity .2s}
-.log-btn:active{opacity:.8}
-.hist-btn{background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:11px;padding:11px 14px;cursor:pointer;font-family:'Syne',sans-serif}
-.add-card-btn{width:100%;background:none;border:2px dashed var(--border);border-radius:18px;color:var(--muted);font-size:13px;font-weight:600;padding:18px;cursor:pointer;font-family:'Syne',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
-.add-card-btn:active{border-color:var(--cyan);color:var(--cyan)}
+.log-btn{flex:1;background:linear-gradient(135deg,#0284c7,#4f46e5);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;padding:11px;cursor:pointer;font-family:'Syne',sans-serif}
+.hist-btn{background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:11px;padding:11px 12px;cursor:pointer;font-family:'Syne',sans-serif}
+.add-card-btn{width:100%;background:none;border:2px dashed var(--border);border-radius:16px;color:var(--muted);font-size:13px;font-weight:600;padding:16px;cursor:pointer;font-family:'Syne',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px}
 
-/* ─── LOG PAGE ─── */
-.log-list{display:flex;flex-direction:column;gap:8px}
-.log-item{background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);display:flex;align-items:center;gap:12px}
-.log-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+/* ── TOOLS ── */
+.tools-grid{display:flex;flex-direction:column;gap:12px}
+.tool-card{background:var(--card);border-radius:16px;padding:16px;border:1px solid var(--border)}
+.tool-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.tool-sub{font-size:11px;color:var(--muted);margin-bottom:14px}
+.whatif-result{background:var(--surface);border-radius:10px;padding:12px;margin-top:10px;display:none}
+.whatif-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}
+.strategy-toggle{display:flex;background:var(--surface);border-radius:10px;padding:3px;gap:3px;margin-bottom:14px}
+.strategy-btn{flex:1;padding:8px;font-size:12px;font-weight:700;border:none;border-radius:8px;cursor:pointer;font-family:'Syne',sans-serif;background:none;color:var(--muted);transition:all .2s}
+.strategy-btn.active{background:var(--card);color:var(--cyan);border:1px solid var(--border)}
+.strategy-result{font-size:12px;line-height:1.8;color:var(--muted)}
+.strategy-result strong{color:var(--text)}
+.backup-actions{display:flex;flex-direction:column;gap:8px}
+
+/* ── HISTORY ── */
+.log-list{display:flex;flex-direction:column;gap:7px}
+.log-item{background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.log-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .log-info{flex:1}
 .log-card-name{font-size:13px;font-weight:700}
-.log-date{font-size:11px;color:var(--muted);margin-top:2px}
-.log-note{font-size:11px;color:var(--muted);font-style:italic;margin-top:2px}
-.log-amount{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--green)}
-.log-score-change{font-size:10px;color:var(--green);font-weight:700;margin-top:2px;text-align:right}
+.log-date{font-size:10px;color:var(--muted);margin-top:1px}
+.log-note{font-size:10px;color:var(--muted);font-style:italic}
+.log-amount{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--green)}
+.log-impact{font-size:10px;color:var(--green);font-weight:700;margin-top:2px;text-align:right}
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
-.empty-icon{font-size:36px;margin-bottom:12px}
-.empty-text{font-size:14px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.empty-icon{font-size:36px;margin-bottom:10px}
+.empty-text{font-size:14px;font-weight:600;margin-bottom:5px;color:var(--text)}
 .empty-sub{font-size:12px}
 
-/* ─── MODALS ─── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+/* ── MODALS ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
 .modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border-radius:24px 24px 0 0;padding:24px 20px env(safe-area-inset-bottom,28px);width:100%;max-width:480px;transform:translateY(40px);transition:transform .3s cubic-bezier(.4,0,.2,1);border:1px solid var(--border);border-bottom:none;max-height:92vh;overflow-y:auto}
+.modal{background:var(--surface);border-radius:24px 24px 0 0;padding:20px 18px env(safe-area-inset-bottom,28px);width:100%;max-width:480px;transform:translateY(40px);transition:transform .3s cubic-bezier(.4,0,.2,1);border:1px solid var(--border);border-bottom:none;max-height:92vh;overflow-y:auto}
 .modal-overlay.open .modal{transform:translateY(0)}
-.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
-.modal-title{font-size:18px;font-weight:800;margin-bottom:20px}
-.form-group{margin-bottom:16px}
-.form-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:8px;font-weight:600}
-.form-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;padding:13px 16px;font-family:'Syne',sans-serif;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
+.modal-title{font-size:17px;font-weight:800;margin-bottom:16px}
+.form-group{margin-bottom:13px}
+.form-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:7px;font-weight:700}
+.form-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;padding:12px 14px;font-family:'Syne',sans-serif;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
 .form-input:focus{border-color:var(--cyan)}
 .form-input::placeholder{color:var(--dim)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.modal-actions{display:flex;gap:10px;margin-top:20px}
-.btn-primary{flex:1;background:linear-gradient(135deg,var(--cyan),var(--blue));border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;padding:14px;cursor:pointer;font-family:'Syne',sans-serif}
-.btn-secondary{background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--muted);font-size:14px;font-weight:600;padding:14px 18px;cursor:pointer;font-family:'Syne',sans-serif}
-.btn-danger{background:#3d0a14;border:1px solid var(--red);border-radius:12px;color:var(--red);font-size:13px;font-weight:600;padding:12px 16px;cursor:pointer;font-family:'Syne',sans-serif}
-
-/* ─── HISTORY MODAL ─── */
-.hist-list{display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto}
-.hist-item{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:10px;padding:12px;border:1px solid var(--border)}
-.hist-date{font-size:11px;color:var(--muted);min-width:70px}
-.hist-amount{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--green);flex:1;text-align:right}
+select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7fa3' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.btn-primary{flex:1;background:linear-gradient(135deg,var(--cyan),var(--blue));border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;padding:13px;cursor:pointer;font-family:'Syne',sans-serif}
+.btn-secondary{background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--muted);font-size:13px;font-weight:600;padding:13px 16px;cursor:pointer;font-family:'Syne',sans-serif}
+.btn-danger{width:100%;background:#3d0a14;border:1px solid var(--red);border-radius:12px;color:var(--red);font-size:13px;font-weight:600;padding:12px;cursor:pointer;font-family:'Syne',sans-serif;margin-top:8px}
+.btn-full{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:13px;font-weight:600;padding:13px 14px;cursor:pointer;font-family:'Syne',sans-serif;text-align:left;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.btn-green{background:rgba(0,229,160,0.1);border:1px solid var(--green2);border-radius:12px;color:var(--green);font-size:13px;font-weight:700;padding:13px;cursor:pointer;font-family:'Syne',sans-serif;width:100%;text-align:center}
+.btn-amber{background:rgba(245,158,11,0.1);border:1px solid var(--amber);border-radius:12px;color:var(--amber);font-size:13px;font-weight:700;padding:13px;cursor:pointer;font-family:'Syne',sans-serif;width:100%;text-align:center}
+.hist-list{display:flex;flex-direction:column;gap:7px;max-height:54vh;overflow-y:auto}
+.hist-item{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:10px;padding:11px;border:1px solid var(--border)}
+.hist-date{font-size:10px;color:var(--muted);min-width:68px}
 .hist-note{font-size:11px;color:var(--muted);flex:1}
-.hist-delete{background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer;padding:4px}
+.hist-amount{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--green)}
+.hist-del{background:none;border:none;color:var(--dim);font-size:14px;cursor:pointer;padding:4px}
 
-/* ─── TOAST ─── */
-.toast{position:fixed;bottom:env(safe-area-inset-bottom,24px);left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:600;z-index:300;transition:transform .3s cubic-bezier(.4,0,.2,1);white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:env(safe-area-inset-bottom,24px);left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 20px;font-size:13px;font-weight:600;z-index:400;transition:transform .3s cubic-bezier(.4,0,.2,1);white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.success{border-color:var(--green2);color:var(--green)}
 .toast.info{border-color:var(--cyan2);color:var(--cyan)}
-
-/* ─── SCORE SNAPSHOT CHART ─── */
-.snapshot-chart{background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;border:1px solid var(--border)}
-.snapshot-chart canvas{width:100%!important}
+.toast.warn{border-color:var(--amber);color:var(--amber)}
 </style>
 </head>
 <body>
-<div class="app">
 
-  <!-- TOP BAR -->
+<!-- PIN SCREEN -->
+<div class="pin-screen" id="pin-screen">
+  <div class="pin-logo">🔐</div>
+  <div class="pin-title">CreditIQ</div>
+  <div class="pin-sub" id="pin-sub">Enter PIN to continue</div>
+  <div class="pin-error" id="pin-error"></div>
+  <div class="pin-dots" id="pin-dots">
+    <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+  </div>
+  <div class="pin-pad">
+    <button class="pin-key" onclick="pinKey('1')">1</button>
+    <button class="pin-key" onclick="pinKey('2')">2</button>
+    <button class="pin-key" onclick="pinKey('3')">3</button>
+    <button class="pin-key" onclick="pinKey('4')">4</button>
+    <button class="pin-key" onclick="pinKey('5')">5</button>
+    <button class="pin-key" onclick="pinKey('6')">6</button>
+    <button class="pin-key" onclick="pinKey('7')">7</button>
+    <button class="pin-key" onclick="pinKey('8')">8</button>
+    <button class="pin-key" onclick="pinKey('9')">9</button>
+    <button class="pin-key empty"></button>
+    <button class="pin-key" onclick="pinKey('0')">0</button>
+    <button class="pin-key del" onclick="pinDel()">⌫</button>
+  </div>
+  <div class="pin-skip" id="pin-skip" onclick="pinSkip()">Skip / Set up later</div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app" id="main-app" style="display:none">
   <div class="topbar">
     <div class="topbar-inner">
       <div class="app-logo">
         <div class="logo-mark">IQ</div>
         <div class="app-name">Credit<span>IQ</span></div>
       </div>
+      <div class="topbar-right">
+        <div class="last-updated" id="last-updated-label"></div>
+        <button class="icon-btn" onclick="openModal('modal-settings')">⚙️</button>
+      </div>
     </div>
     <div class="nav-tabs">
       <button class="tab active" onclick="switchTab('dashboard')">Dashboard</button>
-      <button class="tab" onclick="switchTab('cards')">My Cards</button>
+      <button class="tab" onclick="switchTab('cards')">Cards</button>
+      <button class="tab" onclick="switchTab('tools')">Tools</button>
       <button class="tab" onclick="switchTab('history')">History</button>
     </div>
   </div>
 
-  <!-- ══ DASHBOARD PAGE ══ -->
+  <!-- DASHBOARD -->
   <div class="page active" id="page-dashboard">
-
-    <!-- Score Hero -->
     <div class="score-hero">
-      <div class="score-hero-label">Credit Score Tracker</div>
+      <div class="score-hero-top">
+        <div class="score-hero-label">Credit Scores</div>
+        <button class="update-score-btn" onclick="openUpdateScore()">＋ Log Real Score</button>
+      </div>
       <div class="score-row">
         <div class="score-block">
           <div class="score-bureau">Equifax</div>
-          <div class="score-num" id="disp-eq" style="color:var(--eq-color)">584</div>
+          <div class="score-num" id="disp-eq" style="color:var(--eq-color)">—</div>
+          <div class="score-source-badge est" id="eq-badge">Estimated</div>
           <div class="score-delta" id="disp-eq-delta" style="color:var(--muted)">—</div>
-          <div class="score-tier" id="disp-eq-tier" style="color:var(--eq-color)">Poor</div>
+          <div class="score-tier" id="disp-eq-tier">—</div>
         </div>
         <div class="score-divider"></div>
         <div class="score-block">
           <div class="score-bureau">TransUnion</div>
-          <div class="score-num" id="disp-tu" style="color:var(--tu-color)">655</div>
+          <div class="score-num" id="disp-tu" style="color:var(--tu-color)">—</div>
+          <div class="score-source-badge est" id="tu-badge">Estimated</div>
           <div class="score-delta" id="disp-tu-delta" style="color:var(--muted)">—</div>
-          <div class="score-tier" id="disp-tu-tier" style="color:var(--tu-color)">Fair</div>
+          <div class="score-tier" id="disp-tu-tier">—</div>
         </div>
       </div>
-      <div class="score-bar-section">
-        <div class="score-bar-label"><span>300</span><span>Poor → Fair → Good → Very Good → Exceptional</span><span>850</span></div>
-        <div class="score-track"><div class="score-fill" id="eq-bar-fill" style="background:var(--eq-color)"></div></div>
-        <div style="height:6px"></div>
-        <div class="score-track"><div class="score-fill" id="tu-bar-fill" style="background:var(--tu-color)"></div></div>
-        <div class="score-markers"><span>EQ</span><span>TU</span></div>
+      <div class="score-bars">
+        <div class="score-bar-label"><span>300</span><span>Poor · Fair · Good · Very Good · Exceptional</span><span>850</span></div>
+        <div class="score-track"><div class="score-fill" id="eq-fill" style="background:var(--eq-color)"></div></div>
+        <div class="score-track"><div class="score-fill" id="tu-fill" style="background:var(--tu-color)"></div></div>
+        <div class="score-bureau-tags">
+          <span style="color:var(--eq-color)">● EQ</span>
+          <span style="color:var(--tu-color)">TU ●</span>
+        </div>
       </div>
     </div>
 
-    <!-- Stats Strip -->
+    <!-- Stats -->
     <div class="stats-strip">
       <div class="stat-tile">
         <div class="stat-tile-label">Total Debt</div>
-        <div class="stat-tile-val" id="stat-debt" style="color:var(--red)">$0</div>
+        <div class="stat-tile-val" id="stat-debt" style="color:var(--red)">—</div>
         <div class="stat-tile-sub" id="stat-debt-sub">of limits</div>
       </div>
       <div class="stat-tile">
         <div class="stat-tile-label">Utilization</div>
-        <div class="stat-tile-val" id="stat-util" style="color:var(--amber)">0%</div>
+        <div class="stat-tile-val" id="stat-util">—</div>
         <div class="stat-tile-sub" id="stat-util-tag">—</div>
       </div>
       <div class="stat-tile">
-        <div class="stat-tile-label">Paid Total</div>
-        <div class="stat-tile-val" id="stat-paid" style="color:var(--green)">$0</div>
-        <div class="stat-tile-sub" id="stat-paid-sub">all time</div>
+        <div class="stat-tile-label">Total Paid</div>
+        <div class="stat-tile-val" id="stat-paid" style="color:var(--green)">—</div>
+        <div class="stat-tile-sub">all time</div>
       </div>
     </div>
 
-    <!-- Score Snapshot Chart -->
-    <div class="snapshot-chart">
-      <div class="section-title">Score History</div>
-      <canvas id="scoreChart" height="120"></canvas>
+    <!-- Debt Overview -->
+    <div class="debt-overview">
+      <div class="debt-title-row">
+        <div>
+          <div class="section-title" style="margin-bottom:2px">Debt Overview</div>
+          <div class="debt-total" id="debt-total-num">—</div>
+          <div class="debt-sub" id="debt-total-sub">—</div>
+        </div>
+        <div style="text-align:right">
+          <div class="section-title" style="margin-bottom:2px">Daily Interest</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--red)" id="total-daily-int">—</div>
+          <div style="font-size:10px;color:var(--muted)">per day</div>
+        </div>
+      </div>
+      <div id="debt-bars-container"></div>
+      <div class="due-strip" id="due-strip"></div>
+    </div>
+
+    <!-- Chart -->
+    <div class="card-box">
+      <div class="section-title" style="margin-bottom:6px">Score History</div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--eq-color)"></div>Equifax</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--tu-color)"></div>TransUnion</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green);opacity:.7"></div>Real entry</div>
+      </div>
+      <canvas id="scoreChart" height="110"></canvas>
+    </div>
+
+    <!-- Score Log -->
+    <div class="section-title">Score Log</div>
+    <div class="card-box" style="padding:12px">
+      <div class="score-log-list" id="score-log-list"></div>
     </div>
 
     <!-- Milestones -->
     <div class="section-title">TransUnion Milestones</div>
     <div class="milestones" id="milestones-list"></div>
-
   </div>
 
-  <!-- ══ CARDS PAGE ══ -->
+  <!-- CARDS -->
   <div class="page" id="page-cards">
     <div class="cc-list" id="cc-list"></div>
     <button class="add-card-btn" onclick="openAddCard()">＋ Add Credit Card</button>
   </div>
 
-  <!-- ══ HISTORY PAGE ══ -->
+  <!-- TOOLS -->
+  <div class="page" id="page-tools">
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-title">🔮 What-If Simulator</div>
+        <div class="tool-sub">See estimated score change before making a payment</div>
+        <div class="form-row" style="margin-bottom:10px">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Extra Amount ($)</label>
+            <input class="form-input" type="number" id="whatif-amount" placeholder="e.g. 500" inputmode="decimal" oninput="calcWhatIf()"/>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Apply to Card</label>
+            <select class="form-input" id="whatif-card" onchange="calcWhatIf()"></select>
+          </div>
+        </div>
+        <div class="whatif-result" id="whatif-result">
+          <div class="whatif-row"><span style="color:var(--muted)">New Balance</span><span id="wi-balance" style="font-weight:700"></span></div>
+          <div class="whatif-row"><span style="color:var(--muted)">New Utilization</span><span id="wi-util" style="font-weight:700"></span></div>
+          <div class="whatif-row"><span style="color:var(--muted)">Overall Utilization</span><span id="wi-overall-util" style="font-weight:700"></span></div>
+          <div class="whatif-row"><span style="color:var(--muted)">Est. TU Score</span><span id="wi-tu" style="font-weight:700;color:var(--tu-color)"></span></div>
+          <div class="whatif-row" style="margin-bottom:0"><span style="color:var(--muted)">Score Change</span><span id="wi-delta" style="font-weight:700"></span></div>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-title">📊 Payoff Strategy</div>
+        <div class="tool-sub">Avalanche saves most interest · Snowball builds momentum</div>
+        <div class="strategy-toggle">
+          <button class="strategy-btn active" id="btn-avalanche" onclick="showStrategy('avalanche')">🔥 Avalanche</button>
+          <button class="strategy-btn" id="btn-snowball" onclick="showStrategy('snowball')">❄️ Snowball</button>
+        </div>
+        <div class="strategy-result" id="strategy-result"></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-title">💸 Daily Interest Breakdown</div>
+        <div class="tool-sub">What each card costs you every single day</div>
+        <div id="daily-interest-list"></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-title">💾 Backup & Restore</div>
+        <div class="tool-sub">Never lose your data — export regularly</div>
+        <div class="backup-actions">
+          <button class="btn-green" onclick="exportData()">⬇ Export Data (JSON)</button>
+          <label class="btn-amber" style="display:block;text-align:center;cursor:pointer;margin-top:0;border-radius:12px;padding:13px">
+            ⬆ Import / Restore Data
+            <input type="file" accept=".json" style="display:none" onchange="importData(event)"/>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
   <div class="page" id="page-history">
     <div class="log-list" id="global-log"></div>
   </div>
+</div>
 
-</div><!-- /app -->
+<!-- MODALS -->
 
-<!-- ══ LOG PAYMENT MODAL ══ -->
+<!-- Update Score -->
+<div class="modal-overlay" id="modal-score" onclick="closeOnOverlay(event,'modal-score')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Log Real Score</div>
+    <div style="background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.18);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--green);margin-bottom:14px;line-height:1.7">
+      💡 Get free real scores:<br>
+      <strong>Equifax</strong> → Borrowell.com (weekly update)<br>
+      <strong>TransUnion</strong> → Credit Karma Canada (weekly)
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Equifax Score</label>
+        <input class="form-input" type="number" id="score-eq" placeholder="e.g. 584" inputmode="numeric"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">TransUnion Score</label>
+        <input class="form-input" type="number" id="score-tu" placeholder="e.g. 655" inputmode="numeric"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Date Checked</label>
+        <input class="form-input" type="date" id="score-date"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Source</label>
+        <select class="form-input" id="score-source-sel">
+          <option>Borrowell</option>
+          <option>Credit Karma</option>
+          <option>TD MyCredit</option>
+          <option>Bank Statement</option>
+          <option>Manual</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Note (optional)</label>
+      <input class="form-input" type="text" id="score-note" placeholder="e.g. after paying Walmart"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('modal-score')">Cancel</button>
+      <button class="btn-primary" onclick="saveRealScore()">Save Score</button>
+    </div>
+  </div>
+</div>
+
+<!-- Log Payment -->
 <div class="modal-overlay" id="modal-payment" onclick="closeOnOverlay(event,'modal-payment')">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">Log Payment</div>
-    <div class="form-group">
-      <label class="form-label">Card</label>
-      <div id="log-card-name" style="font-size:15px;font-weight:700;color:var(--cyan);padding:4px 0"></div>
-    </div>
+    <div style="font-size:15px;font-weight:800;color:var(--cyan);margin-bottom:14px" id="log-card-name"></div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Amount ($)</label>
@@ -271,7 +498,12 @@ html,body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;m
     </div>
     <div class="form-group">
       <label class="form-label">Note (optional)</label>
-      <input class="form-input" type="text" id="log-note" placeholder="e.g. minimum payment"/>
+      <input class="form-input" type="text" id="log-note" placeholder="e.g. minimum payment, extra payment"/>
+    </div>
+    <div id="payment-preview" style="background:var(--surface);border-radius:10px;padding:11px;margin-bottom:2px;display:none">
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px">Payment Preview</div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">New Balance</span><span id="prev-balance" style="font-weight:700"></span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">New Utilization</span><span id="prev-util" style="font-weight:700"></span></div>
     </div>
     <div class="modal-actions">
       <button class="btn-secondary" onclick="closeModal('modal-payment')">Cancel</button>
@@ -280,18 +512,18 @@ html,body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;m
   </div>
 </div>
 
-<!-- ══ ADD / EDIT CARD MODAL ══ -->
+<!-- Add/Edit Card -->
 <div class="modal-overlay" id="modal-card" onclick="closeOnOverlay(event,'modal-card')">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="card-modal-title">Add Credit Card</div>
     <div class="form-group">
-      <label class="form-label">Card Nickname</label>
-      <input class="form-input" type="text" id="edit-name" placeholder="e.g. TD Visa"/>
+      <label class="form-label">Card Name</label>
+      <input class="form-input" type="text" id="edit-name" placeholder="e.g. Walmart Mastercard"/>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Balance ($)</label>
+        <label class="form-label">Current Balance ($)</label>
         <input class="form-input" type="number" id="edit-balance" placeholder="0.00" inputmode="decimal"/>
       </div>
       <div class="form-group">
@@ -301,101 +533,194 @@ html,body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;m
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Interest Rate (%)</label>
-        <input class="form-input" type="number" id="edit-apr" placeholder="e.g. 22.99" inputmode="decimal"/>
+        <label class="form-label">APR (%)</label>
+        <input class="form-input" type="number" id="edit-apr" placeholder="e.g. 21.99" inputmode="decimal"/>
       </div>
       <div class="form-group">
         <label class="form-label">Min. Payment ($)</label>
         <input class="form-input" type="number" id="edit-minpay" placeholder="0.00" inputmode="decimal"/>
       </div>
     </div>
-    <div class="modal-actions" style="flex-wrap:wrap;gap:8px">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Due Date (day of month)</label>
+        <input class="form-input" type="number" id="edit-dueday" placeholder="e.g. 9" min="1" max="31" inputmode="numeric"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Due Month</label>
+        <select class="form-input" id="edit-duemonth">
+          <option value="6">June</option><option value="7">July</option>
+          <option value="8">August</option><option value="9">September</option>
+          <option value="10">October</option><option value="11">November</option>
+          <option value="12">December</option><option value="1">January</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
       <button class="btn-secondary" onclick="closeModal('modal-card')">Cancel</button>
       <button class="btn-primary" onclick="saveCard()">Save Card</button>
     </div>
-    <div style="margin-top:10px" id="delete-btn-wrap"></div>
+    <div id="delete-btn-wrap"></div>
   </div>
 </div>
 
-<!-- ══ HISTORY MODAL ══ -->
+<!-- Payment History -->
 <div class="modal-overlay" id="modal-history" onclick="closeOnOverlay(event,'modal-history')">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="hist-modal-title">Payment History</div>
     <div class="hist-list" id="hist-list"></div>
-    <div class="modal-actions" style="margin-top:16px">
+    <div class="modal-actions" style="margin-top:14px">
       <button class="btn-secondary" style="width:100%" onclick="closeModal('modal-history')">Close</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
+<!-- Settings -->
+<div class="modal-overlay" id="modal-settings" onclick="closeOnOverlay(event,'modal-settings')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Settings</div>
+    <button class="btn-full" onclick="openPinSetup()">🔐 <span id="pin-setting-label">Set Up PIN Lock</span></button>
+    <button class="btn-full" onclick="closeModal('modal-settings');switchTab('tools')">💾 Backup & Restore Data</button>
+    <button class="btn-full" onclick="resetApp()" style="color:var(--red)">🗑 Reset All Data</button>
+    <div class="modal-actions" style="margin-top:8px">
+      <button class="btn-secondary" style="width:100%" onclick="closeModal('modal-settings')">Close</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════
 //  STORAGE
-// ══════════════════════════════════════════
-const DB = {
-  get(k){try{return JSON.parse(localStorage.getItem('ciq_'+k))}catch{return null}},
-  set(k,v){localStorage.setItem('ciq_'+k,JSON.stringify(v))},
-  del(k){localStorage.removeItem('ciq_'+k)}
+// ═══════════════════════════════════════
+const DB={
+  get(k){try{return JSON.parse(localStorage.getItem('ciq3_'+k))}catch{return null}},
+  set(k,v){try{localStorage.setItem('ciq3_'+k,JSON.stringify(v))}catch{showToast('Storage full — export your data','warn')}},
 };
-
-// ── Default state ──
-function defaultState(){
-  return {
-    cards:[
-      {id:'c1',name:'Card 1',balance:8000,limit:10000,apr:24.99,minPay:200,color:0},
-      {id:'c2',name:'Card 2',balance:7500,limit:9000,apr:19.99,minPay:150,color:1},
-    ],
-    payments:[],
-    snapshots:[{date:today(),eq:584,tu:655,note:'Starting scores'}],
-    baseEq:584,baseTu:655,
-    totalPaid:0,
-  };
-}
 function today(){return new Date().toISOString().slice(0,10)}
 
-let S = DB.get('state') || defaultState();
-function save(){DB.set('state',S)}
-
-// ══════════════════════════════════════════
-//  SCORE ENGINE
-// ══════════════════════════════════════════
-function calcScores(){
-  const cards = S.cards;
-  if(!cards.length) return {eq:S.baseEq,tu:S.baseTu};
-  const totalBal = cards.reduce((a,c)=>a+c.balance,0);
-  const totalLim = cards.reduce((a,c)=>a+c.limit,0);
-  const util = totalLim > 0 ? totalBal/totalLim : 0;
-
-  // Utilization gain (0–80 pts)
-  const uGain = util<=0.05?85:util<=0.10?80:util<=0.20?65:util<=0.30?50:util<=0.50?25:util<=0.70?8:0;
-
-  // Payment history gain — based on number of logged payments (up to 25 pts)
-  const pCount = S.payments.length;
-  const pGain = Math.min(pCount * 2.5, 25);
-
-  // Credit mix (12 pts flat if they have cards)
-  const mGain = 12;
-
-  // Total paid ratio bonus (up to 10 pts)
-  const totalOriginal = cards.reduce((a,c)=>a+c.balance,0)+S.totalPaid;
-  const paidRatio = totalOriginal>0 ? S.totalPaid/totalOriginal : 0;
-  const payBonus = Math.round(paidRatio*10);
-
-  const gain = uGain + pGain + mGain + payBonus;
+function defaultState(){
+  const t=today();
   return {
-    eq: Math.min(850, Math.round(S.baseEq + gain)),
-    tu: Math.min(850, Math.round(S.baseTu + gain)),
-    util: Math.round(util*100),
-    totalBal,
-    totalLim,
+    cards:[
+      {id:'walmart',name:'Walmart',balance:5568.26,limit:5500,apr:21.99,minPay:144.64,dueDay:null,dueMonth:6,color:0},
+      {id:'capitalone',name:'Capital One',balance:4722.48,limit:4750,apr:23.99,minPay:136,dueDay:9,dueMonth:6,color:1},
+      {id:'td',name:'TD',balance:9297.78,limit:9500,apr:21.99,minPay:185.53,dueDay:null,dueMonth:6,color:2},
+    ],
+    payments:[
+      {id:'p_td_init',cardId:'td',amount:185.53,date:t,note:'Payment made today',scoreImpact:0},
+      {id:'p_cap_init',cardId:'capitalone',amount:136,date:t,note:'June minimum payment',scoreImpact:0},
+    ],
+    scoreLog:[
+      {id:'s0',date:t,eq:584,tu:655,source:'Manual',note:'Starting scores — Equifax & TransUnion',isReal:false},
+    ],
+    totalPaid:185.53+136,
   };
 }
 
-function scoreLabel(s){
+let S=DB.get('state')||defaultState();
+function save(){DB.set('state',S)}
+
+// ═══════════════════════════════════════
+//  PIN
+// ═══════════════════════════════════════
+let pinBuffer='',pinMode='enter',pinSetupFirst='';
+
+function initPin(){
+  const pin=DB.get('pin');
+  if(!pin){unlockApp();return;}
+  document.getElementById('pin-screen').classList.remove('hidden');
+  document.getElementById('pin-skip').style.display='none';
+  pinMode='enter';pinBuffer='';updatePinDots();
+}
+function pinKey(k){
+  if(pinBuffer.length>=4)return;
+  pinBuffer+=k;updatePinDots();
+  if(pinBuffer.length===4){
+    setTimeout(()=>{
+      if(pinMode==='enter'){
+        if(pinBuffer===DB.get('pin')){unlockApp();}
+        else{pinBuffer='';updatePinDots();document.getElementById('pin-error').textContent='Incorrect PIN';}
+      } else if(pinMode==='setup'){
+        pinSetupFirst=pinBuffer;pinBuffer='';updatePinDots();
+        document.getElementById('pin-sub').textContent='Confirm new PIN';
+        document.getElementById('pin-error').textContent='';
+        pinMode='confirm';
+      } else if(pinMode==='confirm'){
+        if(pinBuffer===pinSetupFirst){
+          DB.set('pin',pinBuffer);
+          setEl('pin-setting-label','Change PIN');
+          showToast('PIN set!','success');
+          document.getElementById('pin-screen').classList.add('hidden');
+          closeModal('modal-settings');
+          pinBuffer='';updatePinDots();
+        } else {
+          pinBuffer='';updatePinDots();
+          document.getElementById('pin-error').textContent='PINs did not match';
+          pinMode='setup';pinSetupFirst='';
+          document.getElementById('pin-sub').textContent='Set a new 4-digit PIN';
+        }
+      }
+    },100);
+  }
+}
+function pinDel(){pinBuffer=pinBuffer.slice(0,-1);updatePinDots();}
+function updatePinDots(){for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.toggle('filled',i<pinBuffer.length);}
+function unlockApp(){
+  document.getElementById('pin-screen').classList.add('hidden');
+  document.getElementById('main-app').style.display='flex';
+  renderAll();
+}
+function pinSkip(){unlockApp();}
+function openPinSetup(){
+  closeModal('modal-settings');
+  pinMode='setup';pinBuffer='';pinSetupFirst='';
+  document.getElementById('pin-screen').classList.remove('hidden');
+  document.getElementById('pin-sub').textContent='Set a new 4-digit PIN';
+  document.getElementById('pin-error').textContent='';
+  document.getElementById('pin-skip').style.display='block';
+  document.getElementById('pin-skip').textContent='Cancel';
+  document.getElementById('pin-skip').onclick=()=>{
+    document.getElementById('pin-screen').classList.add('hidden');
+    document.getElementById('main-app').style.display='flex';
+  };
+  updatePinDots();
+}
+
+// ═══════════════════════════════════════
+//  SCORE ENGINE
+// ═══════════════════════════════════════
+function calcEst(){
+  const cards=S.cards;
+  const base=S.scoreLog[0]||{eq:584,tu:655};
+  if(!cards.length)return{eq:base.eq,tu:base.tu,util:0,totalBal:0,totalLim:0};
+  const totalBal=cards.reduce((a,c)=>a+c.balance,0);
+  const totalLim=cards.reduce((a,c)=>a+c.limit,0);
+  const util=totalLim>0?totalBal/totalLim:0;
+  const uGain=util<=0.05?85:util<=0.10?78:util<=0.20?62:util<=0.30?48:util<=0.50?22:util<=0.70?6:0;
+  const pGain=Math.min(S.payments.length*2,24);
+  const mGain=12;
+  const totalOrig=totalBal+S.totalPaid;
+  const payBonus=totalOrig>0?Math.round((S.totalPaid/totalOrig)*10):0;
+  const gain=uGain+pGain+mGain+payBonus;
+  return{eq:Math.min(850,Math.round(base.eq+gain)),tu:Math.min(850,Math.round(base.tu+gain)),util:Math.round(util*100),totalBal,totalLim};
+}
+
+function getLatestReal(){
+  const real=S.scoreLog.filter(s=>s.isReal);
+  if(!real.length)return null;
+  return real.sort((a,b)=>b.date.localeCompare(a.date))[0];
+}
+function getDisplay(){
+  const real=getLatestReal();
+  const est=calcEst();
+  if(real)return{eq:real.eq,tu:real.tu,isReal:true,est};
+  return{eq:est.eq,tu:est.tu,isReal:false,est};
+}
+function scoreInfo(s){
   if(s>=800)return{t:'Exceptional',c:'#00e5a0'};
   if(s>=740)return{t:'Very Good',c:'#4ade80'};
   if(s>=670)return{t:'Good',c:'#a3e635'};
@@ -403,330 +728,492 @@ function scoreLabel(s){
   return{t:'Poor',c:'#ff4d6d'};
 }
 
-// ══════════════════════════════════════════
-//  RENDER DASHBOARD
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════
 function renderDashboard(){
-  const sc = calcScores();
-  const eqInfo = scoreLabel(sc.eq);
-  const tuInfo = scoreLabel(sc.tu);
-  const firstSnap = S.snapshots[0]||{eq:S.baseEq,tu:S.baseTu};
+  const d=getDisplay(), est=d.est;
+  const eqI=scoreInfo(d.eq), tuI=scoreInfo(d.tu);
+  const base=S.scoreLog[0]||{eq:584,tu:655};
 
-  // Scores
-  setEl('disp-eq',sc.eq);
-  setEl('disp-tu',sc.tu);
-  document.getElementById('disp-eq').style.color=eqInfo.c;
-  document.getElementById('disp-tu').style.color=tuInfo.c;
+  setEl('disp-eq',d.eq); el('disp-eq').style.color=eqI.c;
+  setEl('disp-tu',d.tu); el('disp-tu').style.color=tuI.c;
 
-  const eqDelta=sc.eq-firstSnap.eq, tuDelta=sc.tu-firstSnap.tu;
-  const eqDeltaEl=document.getElementById('disp-eq-delta');
-  const tuDeltaEl=document.getElementById('disp-tu-delta');
-  eqDeltaEl.textContent=eqDelta===0?'No change':(eqDelta>0?'+':'')+eqDelta+' pts';
-  eqDeltaEl.style.color=eqDelta>0?'#4ade80':eqDelta<0?'#ff4d6d':'var(--muted)';
-  tuDeltaEl.textContent=tuDelta===0?'No change':(tuDelta>0?'+':'')+tuDelta+' pts';
-  tuDeltaEl.style.color=tuDelta>0?'#4ade80':tuDelta<0?'#ff4d6d':'var(--muted)';
+  const eqB=el('eq-badge'), tuB=el('tu-badge');
+  if(d.isReal){
+    eqB.className='score-source-badge real';eqB.textContent='✓ Real Score';
+    tuB.className='score-source-badge real';tuB.textContent='✓ Real Score';
+  } else {
+    eqB.className='score-source-badge est';eqB.textContent='Estimated';
+    tuB.className='score-source-badge est';tuB.textContent='Estimated';
+  }
 
-  setEl('disp-eq-tier',eqInfo.t); document.getElementById('disp-eq-tier').style.color=eqInfo.c;
-  setEl('disp-tu-tier',tuInfo.t); document.getElementById('disp-tu-tier').style.color=tuInfo.c;
+  const eqD=d.eq-base.eq, tuD=d.tu-base.tu;
+  const eqDE=el('disp-eq-delta'), tuDE=el('disp-tu-delta');
+  eqDE.textContent=eqD===0?'No change since start':(eqD>0?'▲ +':'▼ ')+Math.abs(eqD)+' pts';
+  eqDE.style.color=eqD>0?'#4ade80':eqD<0?'#ff4d6d':'var(--muted)';
+  tuDE.textContent=tuD===0?'No change since start':(tuD>0?'▲ +':'▼ ')+Math.abs(tuD)+' pts';
+  tuDE.style.color=tuD>0?'#4ade80':tuD<0?'#ff4d6d':'var(--muted)';
 
-  // Bars
-  document.getElementById('eq-bar-fill').style.width=pct(sc.eq,300,850)+'%';
-  document.getElementById('eq-bar-fill').style.background=eqInfo.c;
-  document.getElementById('tu-bar-fill').style.width=pct(sc.tu,300,850)+'%';
-  document.getElementById('tu-bar-fill').style.background=tuInfo.c;
+  setEl('disp-eq-tier',eqI.t); el('disp-eq-tier').style.color=eqI.c;
+  setEl('disp-tu-tier',tuI.t); el('disp-tu-tier').style.color=tuI.c;
+  el('eq-fill').style.width=pct(d.eq,300,850)+'%'; el('eq-fill').style.background=eqI.c;
+  el('tu-fill').style.width=pct(d.tu,300,850)+'%'; el('tu-fill').style.background=tuI.c;
 
   // Stats
-  setEl('stat-debt','$'+fmt(sc.totalBal||0));
-  setEl('stat-util',(sc.util||0)+'%');
-  document.getElementById('stat-util').style.color=
-    (sc.util||0)<10?'#00e5a0':(sc.util||0)<30?'#4ade80':(sc.util||0)<50?'#facc15':'#ff4d6d';
-  setEl('stat-util-tag',(sc.util||0)<10?'🎯 Optimal':(sc.util||0)<30?'✅ Good':(sc.util||0)<50?'⚠️ High':'🔴 Critical');
+  setEl('stat-debt','$'+fmt(est.totalBal));
+  setEl('stat-debt-sub','/ $'+fmt(est.totalLim)+' limit');
+  const u=est.util||0;
+  setEl('stat-util',u+'%');
+  el('stat-util').style.color=u<10?'#00e5a0':u<30?'#4ade80':u<50?'#facc15':'#ff4d6d';
+  setEl('stat-util-tag',u<10?'🎯 Optimal':u<30?'✅ Good':u<50?'⚠️ High':'🔴 Critical');
   setEl('stat-paid','$'+fmt(S.totalPaid));
-  setEl('stat-debt-sub','of $'+fmt(sc.totalLim||0));
 
-  // Milestones
+  // Debt overview
+  setEl('debt-total-num','$'+fmt(est.totalBal));
+  setEl('debt-total-sub','Total across '+S.cards.length+' cards · '+u+'% utilized');
+  const totalDailyInt=S.cards.reduce((a,c)=>a+((c.apr/100)/365)*c.balance,0);
+  setEl('total-daily-int','$'+totalDailyInt.toFixed(2));
+
+  // Debt bars
+  const colors=['#0ea5e9','#a78bfa','#00e5a0'];
+  el('debt-bars-container').innerHTML=S.cards.map((c,i)=>{
+    const u2=c.limit>0?Math.round((c.balance/c.limit)*100):0;
+    const bc=u2<30?'#4ade80':u2<50?'#facc15':u2<80?'#f97316':'#ff4d6d';
+    return`<div class="debt-card-bar-row">
+      <div class="debt-card-name">
+        <span style="color:${colors[i]};font-weight:700">${c.name}</span>
+        <span style="color:var(--muted)">$${fmt(c.balance)} / $${fmt(c.limit)} <span style="color:${bc}">(${u2}%)</span></span>
+      </div>
+      <div class="debt-bar-track"><div class="debt-bar-fill" style="width:${Math.min(u2,100)}%;background:${bc}"></div></div>
+    </div>`;
+  }).join('');
+
+  // Due dates strip
+  el('due-strip').innerHTML=S.cards.map((c,i)=>{
+    const months=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const dueStr=c.dueDay?`${months[c.dueMonth]||''} ${c.dueDay}`:months[c.dueMonth]||'—';
+    return`<div class="due-item">
+      <div class="due-label" style="color:${colors[i]}">${c.name}</div>
+      <div class="due-amount">$${fmt(c.minPay)}</div>
+      <div class="due-date">Due ${dueStr}</div>
+    </div>`;
+  }).join('');
+
+  // Last updated label
+  const latest=S.scoreLog.length?[...S.scoreLog].sort((a,b)=>b.date.localeCompare(a.date))[0]:null;
+  if(latest)setEl('last-updated-label','Updated '+fmtDate(latest.date));
+
+  renderScoreLog();
+  renderChart();
+  renderMilestones(d.tu);
+}
+
+function renderScoreLog(){
+  const list=el('score-log-list');
+  const sorted=[...S.scoreLog].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,10);
+  if(!sorted.length){list.innerHTML='<div style="text-align:center;color:var(--muted);font-size:12px;padding:12px">No entries yet</div>';return;}
+  list.innerHTML=sorted.map(s=>`
+    <div class="score-log-item">
+      <div class="score-log-scores" style="flex:1">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:3px">
+          <span class="score-log-eq">EQ ${s.eq}</span>
+          <span style="color:var(--dim)">·</span>
+          <span class="score-log-tu">TU ${s.tu}</span>
+          <span class="score-log-badge" style="background:${s.isReal?'rgba(0,229,160,0.1)':'rgba(107,127,163,0.08)'};color:${s.isReal?'var(--green)':'var(--muted)'};border:1px solid ${s.isReal?'rgba(0,229,160,0.22)':'var(--border)'}">${s.isReal?'✓ Real':'Est.'}</span>
+        </div>
+        <div class="score-log-meta">${fmtDate(s.date)}${s.source?' · '+s.source:''}${s.note?' · '+s.note:''}</div>
+      </div>
+      ${s.id!=='s0'?`<button class="score-log-del" onclick="deleteScoreEntry('${s.id}')">✕</button>`:''}
+    </div>`).join('');
+}
+
+function renderMilestones(tu){
   const ms=[
     {score:670,label:'Good — Most loans available',color:'#a3e635'},
     {score:700,label:'TD Bank loan likely approved',color:'#4ade80'},
     {score:740,label:'Very Good — Best rates unlock',color:'#2dd4bf'},
     {score:780,label:'Excellent — Premium tier',color:'#38bdf8'},
-    {score:800,label:'Exceptional — Top 1%',color:'#00e5a0'},
+    {score:800,label:'Exceptional — Top tier',color:'#00e5a0'},
   ];
-  const ml=document.getElementById('milestones-list');
-  ml.innerHTML=ms.map(m=>{
-    const done=sc.tu>=m.score;
+  el('milestones-list').innerHTML=ms.map(m=>{
+    const done=tu>=m.score;
     return`<div class="milestone${done?' done':''}">
       <div class="ms-circle" style="border-color:${m.color};background:${done?m.color:'transparent'};color:${done?'#05080f':'var(--muted)'}">
         ${done?'✓':''}
       </div>
       <div class="ms-info">
-        <div class="ms-score" style="color:${done?m.color:'var(--muted)'}">${m.score}+</div>
+        <div class="ms-score" style="color:${done?m.color:'var(--muted)'}">${m.score}+ TransUnion</div>
         <div class="ms-desc">${m.label}</div>
-        ${done?`<div class="ms-month" style="color:${m.color}">✓ Achieved</div>`:''}
+        <div class="ms-status" style="color:${done?m.color:'var(--dim)'}">${done?'✓ Achieved':'Not yet reached'}</div>
       </div>
     </div>`;
   }).join('');
-
-  // Chart
-  renderChart();
 }
 
-// ══════════════════════════════════════════
-//  MINI CHART
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════
+//  CHART
+// ═══════════════════════════════════════
 function renderChart(){
-  const canvas=document.getElementById('scoreChart');
+  const canvas=el('scoreChart');if(!canvas)return;
   const ctx=canvas.getContext('2d');
-  const snaps=S.snapshots;
-  const W=canvas.offsetWidth||340, H=120;
-  canvas.width=W*2; canvas.height=H*2; ctx.scale(2,2);
-
+  const logs=[...S.scoreLog].sort((a,b)=>a.date.localeCompare(b.date));
+  const W=canvas.offsetWidth||340,H=110;
+  canvas.width=W*2;canvas.height=H*2;ctx.scale(2,2);
   ctx.clearRect(0,0,W,H);
-  if(snaps.length<2){
-    ctx.fillStyle='#3d506b';ctx.font='13px Syne';ctx.textAlign='center';
-    ctx.fillText('Log payments to see score history',W/2,H/2);return;
+  if(logs.length<2){
+    ctx.fillStyle='#3d506b';ctx.font='11px Syne';ctx.textAlign='center';
+    ctx.fillText('Log more score entries to see the chart',W/2,H/2);return;
   }
-  const eqs=snaps.map(s=>s.eq), tus=snaps.map(s=>s.tu);
-  const allVals=[...eqs,...tus];
-  const minV=Math.min(...allVals)-20, maxV=Math.max(...allVals)+20;
-  const n=snaps.length;
-  function xPos(i){return 30+(i/(n-1))*(W-40)}
-  function yPos(v){return H-20-((v-minV)/(maxV-minV))*(H-30)}
-
-  // Grid lines
+  const eqs=logs.map(s=>s.eq),tus=logs.map(s=>s.tu);
+  const allV=[...eqs,...tus],minV=Math.min(...allV)-15,maxV=Math.max(...allV)+15;
+  const n=logs.length;
+  const xPos=i=>28+(i/(Math.max(n-1,1)))*(W-38);
+  const yPos=v=>H-18-((v-minV)/(maxV-minV))*(H-30);
   ctx.strokeStyle='#1f2d45';ctx.lineWidth=0.5;
-  for(let i=0;i<4;i++){
-    const y=20+i*((H-30)/3);
-    ctx.beginPath();ctx.moveTo(30,y);ctx.lineTo(W-10,y);ctx.stroke();
-  }
-
-  // EQ line
-  drawLine(ctx,snaps.map((_,i)=>({x:xPos(i),y:yPos(eqs[i])})),'#ff4d6d',W,H);
-  // TU line
-  drawLine(ctx,snaps.map((_,i)=>({x:xPos(i),y:yPos(tus[i])})),'#a78bfa',W,H);
-
-  // Dots & labels
-  snaps.forEach((s,i)=>{
-    [[eqs[i],'#ff4d6d'],[tus[i],'#a78bfa']].forEach(([v,c])=>{
-      ctx.beginPath();ctx.arc(xPos(i),yPos(v),3.5,0,Math.PI*2);
-      ctx.fillStyle=c;ctx.fill();
+  [0,1,2,3].forEach(i=>{const y=18+i*((H-28)/3);ctx.beginPath();ctx.moveTo(28,y);ctx.lineTo(W-10,y);ctx.stroke();});
+  [[eqs,'#ff4d6d'],[tus,'#a78bfa']].forEach(([vals,color])=>{
+    const pts=logs.map((_,i)=>({x:xPos(i),y:yPos(vals[i])}));
+    const grad=ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0,color+'30');grad.addColorStop(1,color+'00');
+    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+    pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));
+    ctx.lineTo(pts[n-1].x,H-18);ctx.lineTo(pts[0].x,H-18);
+    ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+    pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));
+    ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
+    logs.forEach((s,i)=>{
+      ctx.beginPath();ctx.arc(pts[i].x,pts[i].y,s.isReal?5:3,0,Math.PI*2);
+      ctx.fillStyle=s.isReal?color:'var(--bg)';ctx.fill();
+      ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.stroke();
     });
-    if(i===0||i===n-1){
-      ctx.fillStyle='#6b7fa3';ctx.font='9px JetBrains Mono';ctx.textAlign='center';
-      ctx.fillText(s.date.slice(5),xPos(i),H-4);
-    }
   });
-
-  // Legend
-  ctx.font='9px Syne';ctx.textAlign='left';
-  ctx.fillStyle='#ff4d6d';ctx.fillRect(32,8,16,3);ctx.fillText('EQ',52,12);
-  ctx.fillStyle='#a78bfa';ctx.fillRect(80,8,16,3);ctx.fillText('TU',100,12);
+  ctx.fillStyle='#3d506b';ctx.font='8px JetBrains Mono';ctx.textAlign='center';
+  logs.forEach((s,i)=>{if(i===0||i===n-1||s.isReal)ctx.fillText(s.date.slice(5),xPos(i),H-3);});
 }
 
-function drawLine(ctx,pts,color,W,H){
-  if(pts.length<2)return;
-  // gradient fill
-  const grad=ctx.createLinearGradient(0,0,0,H);
-  grad.addColorStop(0,color+'44');grad.addColorStop(1,color+'00');
-  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
-  pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));
-  ctx.lineTo(pts[pts.length-1].x,H-20);ctx.lineTo(pts[0].x,H-20);
-  ctx.closePath();ctx.fillStyle=grad;ctx.fill();
-  // line
-  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
-  pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));
-  ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
+// ═══════════════════════════════════════
+//  REAL SCORE
+// ═══════════════════════════════════════
+function openUpdateScore(){
+  el('score-eq').value=''; el('score-tu').value='';
+  el('score-date').value=today(); el('score-note').value='';
+  openModal('modal-score');
+}
+function saveRealScore(){
+  const eq=parseInt(el('score-eq').value);
+  const tu=parseInt(el('score-tu').value);
+  const date=el('score-date').value;
+  const source=el('score-source-sel').value;
+  const note=el('score-note').value.trim();
+  if(!eq||eq<300||eq>850){showToast('Enter valid Equifax score','warn');return;}
+  if(!tu||tu<300||tu>850){showToast('Enter valid TransUnion score','warn');return;}
+  if(!date){showToast('Select a date','warn');return;}
+  S.scoreLog.push({id:'s'+Date.now(),date,eq,tu,source,note,isReal:true});
+  save();closeModal('modal-score');renderAll();showToast('Real score saved! ✓','success');
+}
+function deleteScoreEntry(id){
+  if(S.scoreLog.length<=1){showToast('Keep at least one entry','warn');return;}
+  S.scoreLog=S.scoreLog.filter(s=>s.id!==id);
+  save();renderAll();showToast('Entry removed','info');
 }
 
-// ══════════════════════════════════════════
-//  RENDER CARDS
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════
+//  CARDS
+// ═══════════════════════════════════════
 function renderCards(){
-  const list=document.getElementById('cc-list');
-  list.innerHTML=S.cards.map((c,i)=>{
+  const colors=['#0ea5e9','#a78bfa','#00e5a0'];
+  el('cc-list').innerHTML=S.cards.map((c,i)=>{
     const util=c.limit>0?Math.round((c.balance/c.limit)*100):0;
-    const barColor=util<10?'#00e5a0':util<30?'#4ade80':util<50?'#facc15':util<75?'#f97316':'#ff4d6d';
-    return`<div class="cc-card color-${c.color||i}">
+    const bc=util<10?'#00e5a0':util<30?'#4ade80':util<50?'#facc15':util<75?'#f97316':'#ff4d6d';
+    const dailyInt=((c.apr/100)/365)*c.balance;
+    const monthlyInt=((c.apr/100)/12)*c.balance;
+    const effectivePay=c.minPay-monthlyInt;
+    const payoffMonths=effectivePay>0?Math.ceil(c.balance/effectivePay):999;
+    const payoffStr=payoffMonths<600&&effectivePay>0?addMonths(today(),payoffMonths):'Increase payment!';
+    const minWarning=c.minPay>0&&monthlyInt>=(c.minPay*0.9);
+    const months=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const dueStr=c.dueDay?`${months[c.dueMonth]||''} ${c.dueDay}`:months[c.dueMonth]||'—';
+    const cardPaid=S.payments.filter(p=>p.cardId===c.id).reduce((a,p)=>a+p.amount,0);
+    return`<div class="cc-card color-${c.color!=null?c.color:i}">
+      ${minWarning?`<div class="warn-banner">⚠️ Min payment barely covers interest ($${monthlyInt.toFixed(0)}/mo). Consider paying more to actually reduce principal.</div>`:''}
       <div class="cc-header">
         <div>
-          <div class="cc-name-row">
-            <div class="cc-icon">${c.name.slice(0,2).toUpperCase()}</div>
-            <div class="cc-name">${c.name}</div>
-          </div>
-          <div class="cc-apr">${c.apr}% APR · Min $${fmt(c.minPay)}/mo</div>
+          <div class="cc-name">${c.name}</div>
+          <div class="cc-meta">${c.apr}% APR · Due $${fmt(c.minPay)} · ${dueStr}</div>
         </div>
         <button class="cc-edit-btn" onclick="openEditCard('${c.id}')">Edit</button>
       </div>
       <div class="cc-balance-row">
-        <div class="cc-balance" style="color:${barColor}">$${fmt(c.balance)}</div>
-        <div class="cc-limit">/ $${fmt(c.limit)}</div>
+        <div class="cc-balance" style="color:${bc}">$${c.balance.toFixed(2)}</div>
+        <div class="cc-limit-txt">/ $${fmt(c.limit)}</div>
       </div>
       <div class="cc-util-row">
-        <span class="util-label">Utilization</span>
-        <span class="util-pct" style="color:${barColor}">${util}%</span>
+        <span style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:0.08em">Utilization</span>
+        <span style="font-weight:700;font-size:11px;color:${bc};font-family:'JetBrains Mono',monospace">${util}%${util>100?' ⚠️ Over Limit':''}</span>
       </div>
-      <div class="cc-bar"><div class="cc-bar-fill" style="width:${Math.min(util,100)}%;background:${barColor}"></div></div>
+      <div class="cc-bar"><div class="cc-bar-fill" style="width:${Math.min(util,100)}%;background:${bc}"></div></div>
+      <div class="cc-stats">
+        <div class="cc-stat">
+          <div class="cc-stat-label">Daily Int.</div>
+          <div class="cc-stat-val" style="color:var(--red)">$${dailyInt.toFixed(2)}</div>
+        </div>
+        <div class="cc-stat">
+          <div class="cc-stat-label">Mo. Int.</div>
+          <div class="cc-stat-val" style="color:var(--amber)">$${monthlyInt.toFixed(0)}</div>
+        </div>
+        <div class="cc-stat">
+          <div class="cc-stat-label">Payoff</div>
+          <div class="cc-stat-val" style="color:var(--cyan);font-size:10px">${payoffStr}</div>
+        </div>
+        <div class="cc-stat">
+          <div class="cc-stat-label">Paid</div>
+          <div class="cc-stat-val" style="color:var(--green)">$${fmt(cardPaid)}</div>
+        </div>
+      </div>
       <div class="cc-actions">
         <button class="log-btn" onclick="openLogPayment('${c.id}')">＋ Log Payment</button>
         <button class="hist-btn" onclick="openHistory('${c.id}')">History</button>
       </div>
     </div>`;
   }).join('');
+
+  const sel=el('whatif-card');
+  if(sel){
+    const prev=sel.value;
+    sel.innerHTML=S.cards.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+    if(S.cards.find(c=>c.id===prev))sel.value=prev;
+  }
 }
 
-// ══════════════════════════════════════════
-//  RENDER GLOBAL HISTORY
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════
+//  TOOLS
+// ═══════════════════════════════════════
+function renderTools(){
+  calcWhatIf();
+  showStrategy('avalanche');
+  renderDailyInterest();
+}
+
+function calcWhatIf(){
+  const amt=parseFloat(el('whatif-amount')?.value)||0;
+  const cardId=el('whatif-card')?.value;
+  const res=el('whatif-result');
+  const card=S.cards.find(c=>c.id===cardId);
+  if(!card||amt<=0||!res){if(res)res.style.display='none';return;}
+  const newBal=Math.max(0,card.balance-amt);
+  const newUtil=card.limit>0?Math.round((newBal/card.limit)*100):0;
+  const tempCards=S.cards.map(c=>c.id===cardId?{...c,balance:newBal}:c);
+  const totalBal=tempCards.reduce((a,c)=>a+c.balance,0);
+  const totalLim=tempCards.reduce((a,c)=>a+c.limit,0);
+  const util=totalLim>0?totalBal/totalLim:0;
+  const uGain=util<=0.05?85:util<=0.10?78:util<=0.20?62:util<=0.30?48:util<=0.50?22:util<=0.70?6:0;
+  const base=S.scoreLog[0]||{eq:584,tu:655};
+  const newTU=Math.min(850,Math.round(base.tu+uGain+Math.min(S.payments.length*2+1,24)+12));
+  const curTU=getDisplay().tu;
+  const delta=newTU-curTU;
+  const overallUtil=Math.round(util*100);
+  setEl('wi-balance','$'+newBal.toFixed(2));
+  setEl('wi-util',newUtil+'%');
+  setEl('wi-overall-util',overallUtil+'%');
+  const tuE=el('wi-tu'); tuE.textContent=newTU; tuE.style.color=scoreInfo(newTU).c;
+  const dE=el('wi-delta');
+  dE.textContent=(delta>=0?'+':'')+delta+' pts (est.)';
+  dE.style.color=delta>0?'#4ade80':delta<0?'#ff4d6d':'var(--muted)';
+  res.style.display='block';
+}
+
+function showStrategy(type){
+  el('btn-avalanche').classList.toggle('active',type==='avalanche');
+  el('btn-snowball').classList.toggle('active',type==='snowball');
+  if(!S.cards.length){setEl('strategy-result','Add cards to see strategy.');return;}
+  const sorted=type==='avalanche'
+    ?[...S.cards].sort((a,b)=>b.apr-a.apr)
+    :[...S.cards].sort((a,b)=>a.balance-b.balance);
+  const totalMonthlyInt=S.cards.reduce((a,c)=>a+((c.apr/100)/12)*c.balance,0);
+  const totalMin=S.cards.reduce((a,c)=>a+c.minPay,0);
+  let html='<strong>Pay order:</strong><br>';
+  sorted.forEach((c,i)=>{
+    const badge=type==='avalanche'?`${c.apr}% APR`:`$${fmt(c.balance)}`;
+    html+=`${i+1}. <strong>${c.name}</strong> <span style="color:var(--cyan)">(${badge})</span><br>`;
+  });
+  html+=`<br><strong>Total monthly interest:</strong> $${totalMonthlyInt.toFixed(0)}<br>`;
+  html+=`<strong>Total minimum payments:</strong> $${fmt(totalMin)}/mo<br>`;
+  const tip=type==='avalanche'
+    ?'<span style="color:#4ade80">💡 Avalanche saves you the most total interest — best for your situation since Capital One has highest APR (23.99%)</span>'
+    :'<span style="color:#a78bfa">💡 Snowball pays Capital One first ($4,722), giving you a quick win — good for motivation</span>';
+  html+=`<br>${tip}`;
+  el('strategy-result').innerHTML=html;
+}
+
+function renderDailyInterest(){
+  const e=el('daily-interest-list');if(!e)return;
+  if(!S.cards.length){e.innerHTML='<div style="color:var(--muted);font-size:12px">Add cards to see interest</div>';return;}
+  const total=S.cards.reduce((a,c)=>a+((c.apr/100)/365)*c.balance,0);
+  e.innerHTML=S.cards.map(c=>{
+    const daily=((c.apr/100)/365)*c.balance;
+    const monthly=((c.apr/100)/12)*c.balance;
+    const annualEst=daily*365;
+    return`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-size:13px;font-weight:700">${c.name}</div>
+        <div style="font-size:10px;color:var(--muted)">${c.apr}% APR · $${c.balance.toFixed(2)} balance</div>
+        <div style="font-size:10px;color:var(--dim)">~$${annualEst.toFixed(0)} if no payment this year</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--red)">$${daily.toFixed(2)}/day</div>
+        <div style="font-size:10px;color:var(--muted)">$${monthly.toFixed(0)}/month</div>
+      </div>
+    </div>`;
+  }).join('')+
+  `<div style="display:flex;justify-content:space-between;padding:10px 0">
+    <span style="font-size:12px;font-weight:700;color:var(--text)">Total</span>
+    <div style="text-align:right">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--red)">$${total.toFixed(2)}/day</div>
+      <div style="font-size:10px;color:var(--muted)">$${(total*30).toFixed(0)}/month</div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════
+//  LOG PAYMENT
+// ═══════════════════════════════════════
+let activeCardId=null;
+function openLogPayment(id){
+  activeCardId=id;
+  const card=S.cards.find(c=>c.id===id);
+  setEl('log-card-name',card.name);
+  el('log-amount').value=''; el('log-date').value=today(); el('log-note').value='';
+  el('payment-preview').style.display='none';
+  el('log-amount').oninput=previewPayment;
+  openModal('modal-payment');
+}
+function previewPayment(){
+  const amt=parseFloat(el('log-amount').value)||0;
+  const card=S.cards.find(c=>c.id===activeCardId);
+  if(!card||amt<=0){el('payment-preview').style.display='none';return;}
+  const newBal=Math.max(0,card.balance-amt);
+  const newUtil=card.limit>0?Math.round((newBal/card.limit)*100):0;
+  const bc=newUtil<10?'#00e5a0':newUtil<30?'#4ade80':newUtil<50?'#facc15':'#ff4d6d';
+  setEl('prev-balance','$'+newBal.toFixed(2));
+  el('prev-util').textContent=newUtil+'%'; el('prev-util').style.color=bc;
+  el('payment-preview').style.display='block';
+}
+function submitPayment(){
+  const amount=parseFloat(el('log-amount').value);
+  const date=el('log-date').value;
+  const note=el('log-note').value.trim();
+  if(!amount||amount<=0){showToast('Enter a valid amount','warn');return;}
+  if(!date){showToast('Select a date','warn');return;}
+  const card=S.cards.find(c=>c.id===activeCardId);if(!card)return;
+  const beforeTU=getDisplay().tu;
+  card.balance=Math.max(0,card.balance-amount);
+  S.totalPaid+=amount;
+  const est=calcEst();
+  const afterTU=est.tu;
+  const impact=afterTU-beforeTU;
+  S.scoreLog.push({id:'s'+Date.now(),date,eq:est.eq,tu:est.tu,source:'Auto',note:`$${fmt(amount)} → ${card.name}`,isReal:false});
+  S.payments.push({id:'p'+Date.now(),cardId:activeCardId,amount,date,note,scoreImpact:Math.max(0,impact)});
+  save();closeModal('modal-payment');renderAll();
+  showToast(`Logged! Est. TU ${impact>0?'▲ +'+impact+' pts':'unchanged'}`,impact>0?'success':'info');
+}
+
+// ═══════════════════════════════════════
+//  CARDS CRUD
+// ═══════════════════════════════════════
+let editingCardId=null;
+function openAddCard(){
+  editingCardId=null;
+  setEl('card-modal-title','Add Credit Card');
+  ['edit-name','edit-balance','edit-limit','edit-apr','edit-minpay','edit-dueday'].forEach(id=>el(id).value='');
+  el('edit-duemonth').value='6';
+  el('delete-btn-wrap').innerHTML='';
+  openModal('modal-card');
+}
+function openEditCard(id){
+  editingCardId=id;
+  const c=S.cards.find(x=>x.id===id);
+  setEl('card-modal-title','Edit Card');
+  el('edit-name').value=c.name;
+  el('edit-balance').value=c.balance;
+  el('edit-limit').value=c.limit;
+  el('edit-apr').value=c.apr;
+  el('edit-minpay').value=c.minPay||0;
+  el('edit-dueday').value=c.dueDay||'';
+  el('edit-duemonth').value=c.dueMonth||6;
+  el('delete-btn-wrap').innerHTML=`<button class="btn-danger" onclick="deleteCard('${id}')">🗑 Delete This Card</button>`;
+  openModal('modal-card');
+}
+function saveCard(){
+  const name=el('edit-name').value.trim();
+  const balance=parseFloat(el('edit-balance').value)||0;
+  const limit=parseFloat(el('edit-limit').value)||0;
+  const apr=parseFloat(el('edit-apr').value)||0;
+  const minPay=parseFloat(el('edit-minpay').value)||0;
+  const dueDay=parseInt(el('edit-dueday').value)||null;
+  const dueMonth=parseInt(el('edit-duemonth').value)||6;
+  if(!name){showToast('Enter a card name','warn');return;}
+  if(limit<=0){showToast('Enter a credit limit','warn');return;}
+  if(editingCardId){
+    Object.assign(S.cards.find(x=>x.id===editingCardId),{name,balance,limit,apr,minPay,dueDay,dueMonth});
+  } else {
+    if(S.cards.length>=3){showToast('Max 3 cards supported','warn');return;}
+    S.cards.push({id:'c'+Date.now(),name,balance,limit,apr,minPay,dueDay,dueMonth,color:S.cards.length});
+  }
+  save();closeModal('modal-card');renderAll();showToast(editingCardId?'Card updated':'Card added','success');
+}
+function deleteCard(id){
+  if(!confirm('Delete this card and all payment history for it?'))return;
+  S.cards=S.cards.filter(c=>c.id!==id);
+  S.payments=S.payments.filter(p=>p.cardId!==id);
+  save();closeModal('modal-card');renderAll();showToast('Card deleted','info');
+}
+
+// ═══════════════════════════════════════
+//  HISTORY
+// ═══════════════════════════════════════
 function renderHistory(){
-  const gl=document.getElementById('global-log');
+  const gl=el('global-log');
   const sorted=[...S.payments].sort((a,b)=>b.date.localeCompare(a.date));
   if(!sorted.length){
-    gl.innerHTML=`<div class="empty-state">
-      <div class="empty-icon">📋</div>
-      <div class="empty-text">No payments logged yet</div>
-      <div class="empty-sub">Go to My Cards and tap Log Payment</div>
-    </div>`;return;
+    gl.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No payments logged yet</div><div class="empty-sub">Go to Cards and tap Log Payment</div></div>`;return;
   }
+  const colors=['#0ea5e9','#a78bfa','#00e5a0'];
   gl.innerHTML=sorted.map(p=>{
     const card=S.cards.find(c=>c.id===p.cardId)||{name:'Deleted Card',color:0};
-    const dotColors=['#00d4ff','#a78bfa','#00e5a0'];
     return`<div class="log-item">
-      <div class="log-dot" style="background:${dotColors[card.color||0]}"></div>
+      <div class="log-dot" style="background:${colors[card.color||0]}"></div>
       <div class="log-info">
         <div class="log-card-name">${card.name}</div>
         <div class="log-date">${fmtDate(p.date)}</div>
         ${p.note?`<div class="log-note">${p.note}</div>`:''}
       </div>
       <div style="text-align:right">
-        <div class="log-amount">$${fmt(p.amount)}</div>
-        ${p.scoreImpact?`<div class="log-score-change">+${p.scoreImpact} pts est.</div>`:''}
+        <div class="log-amount">$${p.amount.toFixed(2)}</div>
+        ${p.scoreImpact?`<div class="log-impact">+${p.scoreImpact} pts est.</div>`:''}
       </div>
     </div>`;
   }).join('');
 }
 
-// ══════════════════════════════════════════
-//  LOG PAYMENT
-// ══════════════════════════════════════════
-let activeCardId=null;
-function openLogPayment(cardId){
-  activeCardId=cardId;
-  const card=S.cards.find(c=>c.id===cardId);
-  document.getElementById('log-card-name').textContent=card.name;
-  document.getElementById('log-amount').value='';
-  document.getElementById('log-date').value=today();
-  document.getElementById('log-note').value='';
-  openModal('modal-payment');
-}
-
-function submitPayment(){
-  const amount=parseFloat(document.getElementById('log-amount').value);
-  const date=document.getElementById('log-date').value;
-  const note=document.getElementById('log-note').value.trim();
-  if(!amount||amount<=0){showToast('Enter a valid amount','info');return;}
-  if(!date){showToast('Select a date','info');return;}
-
-  const card=S.cards.find(c=>c.id===activeCardId);
-  if(!card)return;
-
-  // Snapshot before
-  const before=calcScores();
-
-  // Apply payment
-  card.balance=Math.max(0,card.balance-amount);
-  S.totalPaid+=amount;
-
-  // Snapshot after
-  const after=calcScores();
-  const impact=after.tu-before.tu;
-
-  // Log payment
-  S.payments.push({id:'p'+Date.now(),cardId:activeCardId,amount,date,note,scoreImpact:impact>0?impact:0});
-
-  // Score snapshot
-  S.snapshots.push({date,eq:after.eq,tu:after.tu,note:`Payment $${fmt(amount)} on ${card.name}`});
-
-  save();
-  closeModal('modal-payment');
-  renderAll();
-  showToast(`Payment logged! TU score +${impact>0?impact:0} pts estimated`,'success');
-}
-
-// ══════════════════════════════════════════
-//  ADD / EDIT CARD
-// ══════════════════════════════════════════
-let editingCardId=null;
-function openAddCard(){
-  editingCardId=null;
-  document.getElementById('card-modal-title').textContent='Add Credit Card';
-  ['edit-name','edit-balance','edit-limit','edit-apr','edit-minpay'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('delete-btn-wrap').innerHTML='';
-  openModal('modal-card');
-}
-function openEditCard(id){
-  editingCardId=id;
-  const c=S.cards.find(x=>x.id===id);
-  document.getElementById('card-modal-title').textContent='Edit Card';
-  document.getElementById('edit-name').value=c.name;
-  document.getElementById('edit-balance').value=c.balance;
-  document.getElementById('edit-limit').value=c.limit;
-  document.getElementById('edit-apr').value=c.apr;
-  document.getElementById('edit-minpay').value=c.minPay||0;
-  document.getElementById('delete-btn-wrap').innerHTML=
-    `<button class="btn-danger" style="width:100%" onclick="deleteCard('${id}')">🗑 Delete Card</button>`;
-  openModal('modal-card');
-}
-function saveCard(){
-  const name=document.getElementById('edit-name').value.trim();
-  const balance=parseFloat(document.getElementById('edit-balance').value)||0;
-  const limit=parseFloat(document.getElementById('edit-limit').value)||0;
-  const apr=parseFloat(document.getElementById('edit-apr').value)||0;
-  const minPay=parseFloat(document.getElementById('edit-minpay').value)||0;
-  if(!name){showToast('Enter a card name','info');return;}
-  if(limit<=0){showToast('Enter a credit limit','info');return;}
-  if(editingCardId){
-    const c=S.cards.find(x=>x.id===editingCardId);
-    Object.assign(c,{name,balance,limit,apr,minPay});
-  } else {
-    if(S.cards.length>=3){showToast('Max 3 cards supported','info');return;}
-    S.cards.push({id:'c'+Date.now(),name,balance,limit,apr,minPay,color:S.cards.length});
-  }
-  // Add snapshot on edit
-  const sc=calcScores();
-  S.snapshots.push({date:today(),eq:sc.eq,tu:sc.tu,note:editingCardId?'Card updated':'Card added'});
-  save();closeModal('modal-card');renderAll();
-  showToast(editingCardId?'Card updated':'Card added','success');
-}
-function deleteCard(id){
-  if(!confirm('Delete this card?'))return;
-  S.cards=S.cards.filter(c=>c.id!==id);
-  save();closeModal('modal-card');renderAll();showToast('Card deleted','info');
-}
-
-// ══════════════════════════════════════════
-//  HISTORY MODAL
-// ══════════════════════════════════════════
 function openHistory(cardId){
   const card=S.cards.find(c=>c.id===cardId);
-  document.getElementById('hist-modal-title').textContent=(card?card.name:'Card')+' — History';
+  setEl('hist-modal-title',(card?card.name:'Card')+' — Payments');
   const payments=S.payments.filter(p=>p.cardId===cardId).sort((a,b)=>b.date.localeCompare(a.date));
-  const hl=document.getElementById('hist-list');
-  if(!payments.length){
-    hl.innerHTML=`<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">No payments logged yet</div>`;
-  } else {
-    hl.innerHTML=payments.map(p=>`
-      <div class="hist-item">
+  const hl=el('hist-list');
+  hl.innerHTML=!payments.length
+    ?`<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">No payments logged yet</div>`
+    :payments.map(p=>`<div class="hist-item">
         <div class="hist-date">${fmtDate(p.date)}</div>
         <div class="hist-note">${p.note||'—'}</div>
-        <div class="hist-amount">$${fmt(p.amount)}</div>
-        <button class="hist-delete" onclick="deletePayment('${p.id}','${cardId}')">✕</button>
+        <div class="hist-amount">$${p.amount.toFixed(2)}</div>
+        <button class="hist-del" onclick="deletePayment('${p.id}','${cardId}')">✕</button>
       </div>`).join('');
-  }
   openModal('modal-history');
 }
 function deletePayment(pid,cardId){
-  const p=S.payments.find(x=>x.id===pid);
-  if(!p)return;
+  const p=S.payments.find(x=>x.id===pid);if(!p)return;
   const card=S.cards.find(c=>c.id===cardId);
   if(card)card.balance=Math.min(card.limit,card.balance+p.amount);
   S.totalPaid=Math.max(0,S.totalPaid-p.amount);
@@ -734,39 +1221,65 @@ function deletePayment(pid,cardId){
   save();openHistory(cardId);renderAll();showToast('Payment removed','info');
 }
 
-// ══════════════════════════════════════════
-//  UTILS
-// ══════════════════════════════════════════
-function renderAll(){renderDashboard();renderCards();renderHistory();}
-function setEl(id,v){document.getElementById(id).textContent=v}
-function fmt(n){return Number(n||0).toLocaleString('en-CA',{minimumFractionDigits:0,maximumFractionDigits:0})}
-function fmtDate(d){if(!d)return '';const dt=new Date(d+'T12:00:00');return dt.toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'})}
-function pct(v,min,max){return Math.max(0,Math.min(100,((v-min)/(max-min))*100))}
-
-function switchTab(name){
-  document.querySelectorAll('.tab').forEach((t,i)=>{
-    const names=['dashboard','cards','history'];
-    t.classList.toggle('active',names[i]===name);
-  });
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  if(name==='dashboard')setTimeout(renderChart,50);
+// ═══════════════════════════════════════
+//  BACKUP
+// ═══════════════════════════════════════
+function exportData(){
+  const blob=new Blob([JSON.stringify({version:3,exported:today(),state:S},null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`creditiq-backup-${today()}.json`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  showToast('Backup exported!','success');
+}
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const parsed=JSON.parse(ev.target.result);
+      if(parsed.state){S=parsed.state;save();renderAll();showToast('Data restored!','success');}
+      else showToast('Invalid backup file','warn');
+    }catch{showToast('Could not read file','warn');}
+  };
+  reader.readAsText(file);e.target.value='';
+}
+function resetApp(){
+  if(!confirm('Delete ALL data? This cannot be undone.'))return;
+  S=defaultState();save();renderAll();closeModal('modal-settings');showToast('App reset','info');
 }
 
-function openModal(id){document.getElementById(id).classList.add('open')}
-function closeModal(id){document.getElementById(id).classList.remove('open')}
-function closeOnOverlay(e,id){if(e.target===document.getElementById(id))closeModal(id)}
-
+// ═══════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════
+function renderAll(){renderDashboard();renderCards();renderTools();renderHistory();}
+function el(id){return document.getElementById(id)}
+function setEl(id,v){const e=el(id);if(e)e.textContent=v}
+function fmt(n){return Number(n||0).toLocaleString('en-CA',{minimumFractionDigits:0,maximumFractionDigits:0})}
+function fmtDate(d){if(!d)return'';return new Date(d+'T12:00:00').toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'})}
+function pct(v,min,max){return Math.max(0,Math.min(100,((v-min)/(max-min))*100))}
+function addMonths(dateStr,n){const d=new Date(dateStr+'T12:00:00');d.setMonth(d.getMonth()+n);return d.toLocaleDateString('en-CA',{month:'short',year:'numeric'})}
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['dashboard','cards','tools','history'][i]===name));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  el('page-'+name).classList.add('active');
+  if(name==='dashboard')setTimeout(renderChart,60);
+  if(name==='tools')renderTools();
+}
+function openModal(id){el(id).classList.add('open')}
+function closeModal(id){el(id).classList.remove('open')}
+function closeOnOverlay(e,id){if(e.target===el(id))closeModal(id)}
 let toastTimer;
 function showToast(msg,type='info'){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.className='toast '+type+' show';
-  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+  const t=el('toast');t.textContent=msg;t.className='toast '+type+' show';
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
 }
 
 // Init
-renderAll();
-window.addEventListener('resize',()=>{if(document.getElementById('page-dashboard').classList.contains('active'))renderChart()});
+if(DB.get('pin'))setEl('pin-setting-label','Change PIN');
+initPin();
+window.addEventListener('resize',()=>{if(el('page-dashboard').classList.contains('active'))renderChart();});
 </script>
 </body>
 </html>
